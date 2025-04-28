@@ -11,6 +11,23 @@ import { PollyClient, SynthesizeSpeechCommand, TextType } from '@aws-sdk/client-
 // AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION
 const pollyClient = new PollyClient({});
 
+// Helper function to sanitize text for SSML
+function sanitizeForSSML(text) {
+  if (!text) return '';
+  
+  // Replace special characters that need to be escaped in SSML
+  return text
+    .replace(/&/g, '&amp;')     // & must be escaped as &amp;
+    .replace(/</g, '&lt;')      // < must be escaped as &lt;
+    .replace(/>/g, '&gt;')      // > must be escaped as &gt;
+    .replace(/"/g, '&quot;')    // " must be escaped as &quot;
+    .replace(/'/g, '&apos;')    // ' must be escaped as &apos;
+    .replace(/\[\^.*?\]/g, '')  // Remove citation markers like [^1]
+    .replace(/\((?:[^()]*|\([^()]*\))*\)/g, '')  // Remove content in parentheses
+    .replace(/[\u2018\u2019]/g, "'")  // Replace smart quotes
+    .replace(/[\u201C\u201D]/g, '"'); // Replace smart double quotes
+}
+
 // Helper function to convert text to speech using AWS Polly
 async function textToSpeech(text) {
   try {
@@ -39,6 +56,7 @@ async function synthesizeSpeechChunk(textChunk) {
   });
 
   try {
+    console.log(`Sending chunk to Polly: ${textChunk.substring(0, 100)}... (${textChunk.length} chars)`);
     const { AudioStream } = await pollyClient.send(command);
 
     if (!AudioStream) {
@@ -68,7 +86,7 @@ async function processLongText(text) {
     // Split text into paragraphs for more natural breaks
     const paragraphs = processedText.split(/\n+/);
     
-    const MAX_CHUNK_SIZE = 2800; // Keeping a buffer below the 3000 limit for safety
+    const MAX_CHUNK_SIZE = 2500; // Reduced from 2800 for extra safety
     let chunks = [];
     let currentChunk = '';
     
@@ -119,8 +137,31 @@ async function processLongText(text) {
     
     for (let i = 0; i < chunks.length; i++) {
       console.log(`Processing Polly chunk ${i+1}/${chunks.length} (${chunks[i].length} chars)`);
-      const audioBase64 = await synthesizeSpeechChunk(chunks[i]);
-      audioChunks.push(Buffer.from(audioBase64, 'base64'));
+      
+      try {
+        const audioBase64 = await synthesizeSpeechChunk(chunks[i]);
+        audioChunks.push(Buffer.from(audioBase64, 'base64'));
+      } catch (error) {
+        console.error(`Error processing chunk ${i+1}:`, error);
+        console.log(`Problematic chunk content: ${chunks[i].substring(0, 200)}...`);
+        
+        // Attempt to fix common SSML issues and retry
+        try {
+          console.log('Attempting to fix SSML and retry...');
+          // Make sure the SSML is valid by using only basic tags
+          const fixedChunk = `<speak>${chunks[i].replace(/<\/?speak>/g, '').replace(/<[^>]*>/g, '')}</speak>`;
+          const audioBase64 = await synthesizeSpeechChunk(fixedChunk);
+          audioChunks.push(Buffer.from(audioBase64, 'base64'));
+        } catch (retryError) {
+          console.error('Retry failed:', retryError);
+          // Skip this chunk rather than failing the entire process
+          console.log('Skipping problematic chunk and continuing...');
+        }
+      }
+    }
+    
+    if (audioChunks.length === 0) {
+      throw new Error('No audio chunks were successfully processed');
     }
     
     // Concatenate all audio chunks
@@ -151,7 +192,7 @@ function getFirstAuthor(authors) {
 function generatePodcastScript(digestTitle, articles) {
   // Create intro with pauses for more natural rhythm
   let script = `<speak>Welcome to OncoBrief, <break time="200ms"/> your weekly podcast summarizing the latest oncology research. `;
-  script += `This episode covers ${digestTitle}. <break time="300ms"/> `;
+  script += `This episode covers ${sanitizeForSSML(digestTitle)}. <break time="300ms"/> `;
   script += `We'll discuss ${articles.length} recent publications from top oncology journals.<break time="700ms"/>\n\n`;
 
   // Add overview of all articles first (like a table of contents)
@@ -159,7 +200,7 @@ function generatePodcastScript(digestTitle, articles) {
   
   articles.forEach((article, index) => {
     // Add brief article intro with number, title and journal
-    script += `Article ${index + 1}: ${article.title}. Published in ${article.journal}.\n`;
+    script += `Article ${index + 1}: ${sanitizeForSSML(article.title)}. Published in ${sanitizeForSSML(article.journal)}.\n`;
   });
   
   script += `<break time="1000ms"/>Now, let's explore each article in more detail.<break time="700ms"/>\n\n`;
@@ -170,33 +211,33 @@ function generatePodcastScript(digestTitle, articles) {
 
   // Now add each article with detailed information
   articles.forEach((article, index) => {
-    let articleScript = `<emphasis level="strong">Article ${index + 1}:</emphasis> ${article.title}.\n`;
+    let articleScript = `<emphasis level="strong">Article ${index + 1}:</emphasis> ${sanitizeForSSML(article.title)}.\n`;
     
     // Add only the first author if available
     if (article.authors) {
       const firstAuthor = getFirstAuthor(article.authors);
       if (firstAuthor) {
-        articleScript += `From ${firstAuthor} and colleagues.\n`;
+        articleScript += `From ${sanitizeForSSML(firstAuthor)} and colleagues.\n`;
       }
     }
     
     // Add journal info with better speech flow
-    articleScript += `Published in ${article.journal}`;
+    articleScript += `Published in ${sanitizeForSSML(article.journal)}`;
     if (article.pubYear) {
-      articleScript += ` in ${article.pubYear}`;
+      articleScript += ` in ${sanitizeForSSML(article.pubYear)}`;
     }
     articleScript += `.<break time="300ms"/>\n`;
     
     // Add AI summary if available, otherwise use a portion of the abstract
     if (article.aiSummary) {
-      articleScript += `${article.aiSummary}\n\n<break time="700ms"/>`;
+      articleScript += `${sanitizeForSSML(article.aiSummary)}\n\n<break time="700ms"/>`;
     } else if (article.abstract) {
       // Use first ~100 words of abstract if AI summary isn't available
       // Removing the strict character limit per article calculation
       const words = article.abstract.split(' ');
       const wordLimit = 100; 
       const shortAbstract = words.slice(0, wordLimit).join(' ') + (words.length > wordLimit ? '...' : '');
-      articleScript += `${shortAbstract}\n\n<break time="700ms"/>`;
+      articleScript += `${sanitizeForSSML(shortAbstract)}\n\n<break time="700ms"/>`;
     } else {
       articleScript += `No abstract available for this article.\n\n<break time="700ms"/>`;
     }
