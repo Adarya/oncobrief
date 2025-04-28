@@ -1,0 +1,46 @@
+Welcome to OncoBrief, <break time="200ms"/> your weekly podcast summarizing the latest oncology research. This episode covers Apr 19, 2025 - Apr 26, 2025. <break time="300ms"/> We'll discuss 12 recent publications from top oncology journals.<break time="700ms"/>
+
+Here's a quick overview of the articles we'll cover:<break time="300ms"/>
+
+Article 1: Tumor-Infiltrating Clonal Hematopoiesis.. Published in The New England journal of medicine.
+Article 2: ADAGIO: A Phase IIb, Open-Label, Single-Arm, Multicenter Study Assessing the Efficacy and Safety of Adavosertib (AZD1775) as Treatment for Recurrent or Persistent Uterine Serous Carcinoma.. Published in Journal of clinical oncology : official journal of the American Society of Clinical Oncology.
+Article 3: What I Wish I Had Known: A Pediatric Oncologist's Transition to Survivorship Care.. Published in Journal of clinical oncology : official journal of the American Society of Clinical Oncology.
+Article 4: Fertility Preservation in People With Cancer: ASCO Guideline Update.. Published in Journal of clinical oncology : official journal of the American Society of Clinical Oncology.
+Article 5: Data, Models, and Visuals: How Data Science Methods Can Augment (Geriatric) Oncology Research.. Published in Journal of clinical oncology : official journal of the American Society of Clinical Oncology.
+Article 6: Baseline Liquid Biopsy in Relation to Tissue-Based Parameters in Metastatic Colorectal Cancer: Results From the Randomized FIRE-4 (AIO-KRK-0114) Study.. Published in Journal of clinical oncology : official journal of the American Society of Clinical Oncology.
+Article 7: Surrogate End Points for Overall Survival in Neoadjuvant Randomized Clinical Trials for Early Breast Cancer.. Published in Journal of clinical oncology : official journal of the American Society of Clinical Oncology.
+Article 8: Machine Learning to Predict Mortality in Older Patients With Cancer: Development and External Validation of the Geriatric Cancer Scoring System Using Two Large French Cohorts.. Published in Journal of clinical oncology : official journal of the American Society of Clinical Oncology.
+Article 9: Postoperative Radiotherapy &#xb1; Cetuximab for Intermediate-Risk Head and Neck Cancer.. Published in Journal of clinical oncology : official journal of the American Society of Clinical Oncology.
+Article 10: Randomized Comparison of Magnetic Resonance Imaging Versus Transurethral Resection for Staging New Bladder Cancers: Results From the Prospective BladderPath Trial.. Published in Journal of clinical oncology : official journal of the American Society of Clinical Oncology.
+Article 11: Neoadjuvant Nivolumab Plus Ipilimumab Versus Chemotherapy in Resectable Lung Cancer.. Published in Journal of clinical oncology : official journal of the American Society of Clinical Oncology.
+Article 12: Olaparib as Treatment Versus Nonplatinum Chemotherapy in Patients With Platinum-Sensitive Relapsed Ovarian Cancer: Phase III SOLO3 Study Final Overall Survival Results.. Published in Journal of clinical oncology : official journal of the American Society of Clinical Oncology.
+<break time="1000ms"/>Now, let's explore each article in more detail.<break time="700ms"/>
+
+<emphasis>Article 1:</emphasis> Tumor-Infiltrating Clonal Hematopoiesis..
+From Pich and colleagues.
+Published in The New England journal of medicine in 2025.<break time="300ms"/>
+This study characterized tumor-infiltrating clonal hematopoiesis (TI-CH), defined as high variant-allele frequency CHIP mutations in tumors, across large cohorts of patients with non-small-cell lung cancer (n=421) and various solid tumors (n=49,351). TI-CH was observed in a substantial fraction of patients with CHIP (42% in NSCLC, 26% pan-cancer) and independently predicted an increased risk of disease recurrence or death in NSCLC and all-cause mortality in solid tumors. Functional analyses revealed that TET2-mutant CHIP, a strong predictor of TI-CH, enhanced monocyte migration, fueled a myeloid-rich tumor microenvironment, and promoted tumor organoid growth. These findings demonstrate that aging-related clonal hematopoiesis infiltrating the tumor microenvironment is associated with adverse clinical outcomes and actively influences tumor evolution.
+
+<break time="700ms"/><emphasis>Article 2:</emphasis> ADAGIO: A Phase IIb, Open-Label, Single-Arm, Multicenter Study Assessing the Efficacy and Safety of Adavosertib (AZD1775) as Treatment for Recurrent or Persistent Uterine Serous Carcinoma..
+From Liu and colleagues.
+Published in Journal of clinical oncology : official journal of the American Society of Clinical Oncology in 2025.<break time="300ms"/>
+This phase IIb, single-arm study assessed adavosertib in patients with recurrent/persistent uterine serous carcinoma previously treated with platinum-based chemotherapy. Adavosertib demonstrated an objective response rate of 26.0% (95% CI, 17.9-35.5) by blinded independent central review, with a median duration of response of 4.7 months and median progression-free survival of 2.8 months. However, the 300 mg daily dose was associated with significant toxicity, with 60.6% experiencing Grade ≥3 treatment-related adverse events, leading to discontinuation in 14.7% of patients. Exploratory biomarker analysis suggested a potential association between CCNE1 amplification/high cyclin E1 expression and response. While showing some antitumor activity, optimizing the adavosertib regimen and identifying predictive biomarkers are crucial for its potential clinical application in this population.
+
+<break time="700ms"/><emphasis>Article 3:</emphasis> What I Wish I Had Known: A Pediatric Oncologist's Transition to Survivorship Care..
+From Izurieta-Pacheco and colleagues.
+Published in Journal of clinical oncology : official journal of the American Society of Clinical Oncology in 2025.<break time="300ms"/>
+This reflective essay explores the often overlooked challenges inherent in cancer survivorship care. Focusing on the journey from pediatric oncology, it highlights the complexities survivors face after treatment concludes. The work underscores the critical need to enhance support systems for this population. Addressing these transitional and long-term care gaps is vital for optimizing survivor well-being.
+
+<break time="700ms"/><emphasis>Article 4:</emphasis> Fertility Preservation in People With Cancer: ASCO Guideline Update..
+From Su and colleagues.
+Published in Journal of clinical oncology : official journal of the American Society of Clinical Oncology in 2025.<break time="300ms"/>
+A multidisciplinary Expert Panel updated a systematic review (166 studies) to provide current fertility preservation (FP) recommendations for people with cancer. Key recommendations emphasize evaluating and counseling patients about reproductive risks at diagnosis and survivorship, referring interested individuals to specialists, and discussing FP options *before* initiating cancer therapy. Established methods like sperm, embryo, oocyte, and ovarian tissue cryopreservation are recommended based on sex and pubertal status, while experimental approaches like prepubertal testicular tissue cryopreservation should be offered in clinical trials. These updated guidelines underscore the importance of prompt access to multidisciplinary FP teams, advocacy for comprehensive service coverage, and integrating reproductive health discussions into standard oncology care to optimize patient outcomes and quality of life.
+
+<break time="700ms"/><emphasis>Article 5:</emphasis> Data, Models, and Visuals: How Data Science Methods Can Augment (Geriatric) Oncology Research..
+From Ramsdale and colleagues.
+Published in Journal of clinical oncology : official journal of the American Society of Clinical Oncology in 2025.<break time="300ms"/>
+This research, conducted in two large observational French cohorts, highlights the critical role of Geriatric Assessment (GA) variables in predicting prognosis for older adults with cancer. Beyond the specific clinical findings, the study serves as a valuable illustration of how data science, machine learning, and many-model thinking can be effectively integrated into clinical research. This methodological approach demonstrates a powerful way to augment traditional research methods amidst shifting data paradigms. Ultimately, the work underscores both the clinical utility of comprehensive geriatric evaluation and the potential of advanced analytics to improve prognostic modeling in this population.
+
+<break time="700ms"/>Due to length limitations, the remaining articles could not be included in this podcast.<break time="500ms"/>
+
+<break time="500ms"/>That concludes this episode of OncoBrief. <break time="300ms"/> Thank you for listening. <break time="300ms"/> For more detailed information on these articles, please visit the OncoBrief website or check the original publications. <break time="300ms"/> Stay tuned for next week's update on the latest oncology research.

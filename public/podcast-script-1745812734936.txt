@@ -1,0 +1,25 @@
+<speak>Welcome to OncoBrief, <break time="200ms"/> your weekly podcast summarizing the latest oncology research. This episode covers Apr 21, 2025 - Apr 28, 2025. <break time="300ms"/> We'll discuss 3 recent publications from top oncology journals.<break time="700ms"/>
+
+Here's a quick overview of the articles we'll cover:<break time="300ms"/>
+
+Article 1: Tumor-Infiltrating Clonal Hematopoiesis.. Published in The New England journal of medicine.
+Article 2: ADAGIO: A Phase IIb, Open-Label, Single-Arm, Multicenter Study Assessing the Efficacy and Safety of Adavosertib (AZD1775) as Treatment for Recurrent or Persistent Uterine Serous Carcinoma.. Published in Journal of clinical oncology : official journal of the American Society of Clinical Oncology.
+Article 3: What I Wish I Had Known: A Pediatric Oncologist's Transition to Survivorship Care.. Published in Journal of clinical oncology : official journal of the American Society of Clinical Oncology.
+<break time="1000ms"/>Now, let's explore each article in more detail.<break time="700ms"/>
+
+<emphasis level="strong">Article 1:</emphasis> Tumor-Infiltrating Clonal Hematopoiesis..
+From Pich and colleagues.
+Published in The New England journal of medicine in 2025.<break time="300ms"/>
+This study characterized tumor-infiltrating clonal hematopoiesis (TI-CH), defined by high variant-allele frequency CHIP mutations in tumors, across large cohorts of patients with NSCLC and other solid tumors. TI-CH was present in a substantial fraction of patients with CHIP and independently predicted an increased risk of disease recurrence or death in NSCLC and increased all-cause mortality in pan-cancer cohorts. Mechanistically, TET2-mutant CHIP, a strong predictor of TI-CH, enhanced monocyte migration, fostered a myeloid-rich tumor microenvironment, and promoted tumor growth in experimental models. These findings indicate that TI-CH is a common phenomenon associated with adverse clinical outcomes and suggest that aging-related clonal hematopoiesis can actively influence tumor evolution and progression by remodeling the tumor microenvironment.
+
+<break time="700ms"/><emphasis level="strong">Article 2:</emphasis> ADAGIO: A Phase IIb, Open-Label, Single-Arm, Multicenter Study Assessing the Efficacy and Safety of Adavosertib (AZD1775) as Treatment for Recurrent or Persistent Uterine Serous Carcinoma..
+From Liu and colleagues.
+Published in Journal of clinical oncology : official journal of the American Society of Clinical Oncology in 2025.<break time="300ms"/>
+This phase IIb, single-arm study assessed adavosertib (300 mg QD) in 104 patients with recurrent/persistent uterine serous carcinoma previously treated with platinum. The objective response rate by blinded independent central review was 26.0%, with a median duration of response of 4.7 months and median progression-free survival of 2.8 months. Adavosertib demonstrated significant toxicity, with 97.2% experiencing treatment-related adverse events and 60.6% experiencing Grade ≥3 events, leading to discontinuation in 14.7% due to TRAEs; exploratory biomarker analysis suggested a potential association with CCNE1/cyclin E1 expression. While showing some antitumor activity, the observed toxicity profile at this dose limits its immediate clinical utility, highlighting the need for further investigation into optimal dosing and patient selection.
+
+<break time="700ms"/><emphasis level="strong">Article 3:</emphasis> What I Wish I Had Known: A Pediatric Oncologist's Transition to Survivorship Care..
+From Izurieta-Pacheco and colleagues.
+Published in Journal of clinical oncology : official journal of the American Society of Clinical Oncology in 2025.<break time="300ms"/>
+This essay undertakes a reflective exploration of the significant, often overlooked challenges inherent in cancer survivorship care. It specifically considers the journey from pediatric oncology through supporting individuals in navigating life after active treatment. The work highlights the critical need to address these long-term complexities faced by survivors. This underscores the importance of developing robust strategies to enhance post-treatment support and improve quality of life.
+
+<break time="700ms"/><break time="500ms"/>That concludes this episode of OncoBrief. <break time="300ms"/> Thank you for listening. <break time="300ms"/> For more detailed information on these articles, please visit the OncoBrief website or check the original publications. <break time="300ms"/> Stay tuned for next week's update on the latest oncology research.</speak>

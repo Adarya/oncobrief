@@ -1,0 +1,19 @@
+Welcome to OncoBrief, <break time="200ms"/> your weekly podcast summarizing the latest oncology research. This episode covers Apr 12, 2025 - Apr 15, 2025. <break time="300ms"/> We'll discuss 2 recent publications from top oncology journals.<break time="700ms"/>
+
+Here's a quick overview of the articles we'll cover:<break time="300ms"/>
+
+Article 1: Clinical Benefit and Safety of Reduced Elective Dose in Definitive Radiotherapy for Head and Neck Squamous Cell Carcinoma: The UPGRADE-RT Multicenter Randomized Controlled Trial.. Published in Journal of clinical oncology : official journal of the American Society of Clinical Oncology.
+Article 2: Effect of invitation to colonoscopy versus faecal immunochemical test screening on colorectal cancer mortality (COLONPREV): a pragmatic, randomised, controlled, non-inferiority trial.. Published in Lancet (London, England).
+<break time="1000ms"/>Now, let's explore each article in more detail.<break time="700ms"/>
+
+<emphasis>Article 1:</emphasis> Clinical Benefit and Safety of Reduced Elective Dose in Definitive Radiotherapy for Head and Neck Squamous Cell Carcinoma: The UPGRADE-RT Multicenter Randomized Controlled Trial..
+From van den Bosch and colleagues.
+Published in Journal of clinical oncology : official journal of the American Society of Clinical Oncology in 2025.<break time="300ms"/>
+This multicenter randomized controlled trial compared reduced (43 Gy) versus standard (50 Gy) elective neck irradiation dose during definitive accelerated radiotherapy (68 Gy) for head and neck cancer. The primary outcome, normalcy of diet score at 1 year, showed no significant difference between the groups. Crucially, the 2-year recurrence rate in electively irradiated nodes was low and comparable (4.9% vs 4.3%), meeting the safety criteria for the reduced dose. Exploratory analyses suggested potential benefits in acute dysphagia and xerostomia-related quality of life with the reduced dose. This study reinforces findings that a reduced elective dose is safe for definitive head and neck cancer radiotherapy.
+
+<break time="700ms"/><emphasis>Article 2:</emphasis> Effect of invitation to colonoscopy versus faecal immunochemical test screening on colorectal cancer mortality (COLONPREV): a pragmatic, randomised, controlled, non-inferiority trial..
+From Castells and colleagues.
+Published in Lancet (London, England) in 2025.<break time="300ms"/>
+This pragmatic, randomized non-inferiority trial compared invitation to biennial faecal immunochemical testing (FIT) versus one-time colonoscopy for colorectal cancer (CRC) screening in average-risk adults. The study found that invitation to FIT was non-inferior to invitation to colonoscopy regarding 10-year CRC mortality (0.24% vs 0.22%). Participation rates were significantly higher among individuals invited to FIT (39.9%) compared to those invited to colonoscopy (31.8%). These findings suggest that FIT-based screening programs are a non-inferior strategy for reducing CRC mortality and may achieve higher population uptake than colonoscopy-based programs.
+
+<break time="700ms"/><break time="500ms"/>That concludes this episode of OncoBrief. <break time="300ms"/> Thank you for listening. <break time="300ms"/> For more detailed information on these articles, please visit the OncoBrief website or check the original publications. <break time="300ms"/> Stay tuned for next week's update on the latest oncology research.

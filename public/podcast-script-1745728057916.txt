@@ -1,0 +1,25 @@
+Welcome to OncoBrief, <break time="200ms"/> your weekly podcast summarizing the latest oncology research. This episode covers Apr 21, 2025 - Apr 27, 2025. <break time="300ms"/> We'll discuss 3 recent publications from top oncology journals.<break time="700ms"/>
+
+Here's a quick overview of the articles we'll cover:<break time="300ms"/>
+
+Article 1: Tumor-Infiltrating Clonal Hematopoiesis.. Published in The New England journal of medicine.
+Article 2: ADAGIO: A Phase IIb, Open-Label, Single-Arm, Multicenter Study Assessing the Efficacy and Safety of Adavosertib (AZD1775) as Treatment for Recurrent or Persistent Uterine Serous Carcinoma.. Published in Journal of clinical oncology : official journal of the American Society of Clinical Oncology.
+Article 3: What I Wish I Had Known: A Pediatric Oncologist's Transition to Survivorship Care.. Published in Journal of clinical oncology : official journal of the American Society of Clinical Oncology.
+<break time="1000ms"/>Now, let's explore each article in more detail.<break time="700ms"/>
+
+<emphasis>Article 1:</emphasis> Tumor-Infiltrating Clonal Hematopoiesis..
+From Pich and colleagues.
+Published in The New England journal of medicine in 2025.<break time="300ms"/>
+This study characterized tumor-infiltrating clonal hematopoiesis (TI-CH) in large cohorts of patients with non-small-cell lung cancer and other solid tumors. They found that TI-CH, defined by high variant-allele frequency CHIP mutations within tumors, was present in a significant proportion of patients with CHIP and independently predicted an increased risk of disease recurrence and death. Mechanistically, TET2 mutations were strongly associated with TI-CH and functionally enhanced monocyte migration, promoted a myeloid-rich tumor microenvironment, and accelerated tumor growth. These findings indicate that aging-related clonal hematopoiesis can directly influence the tumor microenvironment and cancer progression, highlighting a novel mechanism impacting patient outcomes.
+
+<break time="700ms"/><emphasis>Article 2:</emphasis> ADAGIO: A Phase IIb, Open-Label, Single-Arm, Multicenter Study Assessing the Efficacy and Safety of Adavosertib (AZD1775) as Treatment for Recurrent or Persistent Uterine Serous Carcinoma..
+From Liu and colleagues.
+Published in Journal of clinical oncology : official journal of the American Society of Clinical Oncology in 2025.<break time="300ms"/>
+This phase IIb, single-arm study evaluated adavosertib in patients with recurrent/persistent uterine serous carcinoma previously treated with platinum-based chemotherapy. The study demonstrated an objective response rate of 26.0% (95% CI, 17.9-35.5) by blinded independent central review, with a median duration of response of 4.7 months. However, adavosertib at the 300 mg once daily dose exhibited significant toxicity, with 60.6% of patients experiencing Grade ≥3 treatment-related adverse events, leading to discontinuation in 14.7%. Exploratory biomarker analysis suggested a potential association between CCNE1 amplification/high cyclin E1 expression and response. While showing some antitumor activity, the toxicity profile at this dose highlights the need for further optimization of dosing or patient selection for adavosertib in this challenging population.
+
+<break time="700ms"/><emphasis>Article 3:</emphasis> What I Wish I Had Known: A Pediatric Oncologist's Transition to Survivorship Care..
+From Izurieta-Pacheco and colleagues.
+Published in Journal of clinical oncology : official journal of the American Society of Clinical Oncology in 2025.<break time="300ms"/>
+This abstract highlights the significant, yet often overlooked, challenges inherent in cancer survivorship care. It reflects on the complex journey survivors undertake, particularly those transitioning from pediatric oncology settings, as they navigate life after treatment concludes. The essay implicitly underscores the critical need for enhanced focus and support systems to address these post-treatment challenges effectively.
+
+<break time="700ms"/><break time="500ms"/>That concludes this episode of OncoBrief. <break time="300ms"/> Thank you for listening. <break time="300ms"/> For more detailed information on these articles, please visit the OncoBrief website or check the original publications. <break time="300ms"/> Stay tuned for next week's update on the latest oncology research.

@@ -1,0 +1,20 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Allow read access to all users for digests and articles
+    match /digests/{digestId} {
+      allow read: if true;
+    }
+    
+    match /articles/{articleId} {
+      allow read: if true;
+    }
+    
+    match /journals/{journalId} {
+      allow read: if true;
+      // For simplicity, allowing write to journals without authentication
+      // In production, add authentication and role-based security
+      allow write: if true;
+    }
+  }
+} 

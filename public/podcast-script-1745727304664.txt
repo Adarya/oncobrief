@@ -1,0 +1,13 @@
+Welcome to OncoBrief, <break time="200ms"/> your weekly podcast summarizing the latest oncology research. This episode covers Apr 24, 2025 - Apr 27, 2025. <break time="300ms"/> We'll discuss 1 recent publications from top oncology journals.<break time="700ms"/>
+
+Here's a quick overview of the articles we'll cover:<break time="300ms"/>
+
+Article 1: Tumor-Infiltrating Clonal Hematopoiesis.. Published in The New England journal of medicine.
+<break time="1000ms"/>Now, let's explore each article in more detail.<break time="700ms"/>
+
+<emphasis>Article 1:</emphasis> Tumor-Infiltrating Clonal Hematopoiesis..
+From Pich and colleagues.
+Published in The New England journal of medicine in 2025.<break time="300ms"/>
+This study characterized tumor-infiltrating clonal hematopoiesis (TI-CH), defined as the presence of clonal hematopoiesis of indeterminate potential (CHIP) mutations in tumors, across large cohorts of patients with non-small-cell lung cancer (NSCLC) and various solid tumors. They found that TI-CH was present in a significant proportion of CHIP patients and independently predicted an increased risk of disease recurrence or death in NSCLC and increased all-cause mortality in solid tumors compared to CHIP without TI-CH. Mechanistically, TET2-mutant CHIP, a strong predictor of TI-CH, enhanced monocyte migration, fostered a myeloid-rich tumor microenvironment, and promoted tumor growth in experimental models. These findings demonstrate that TI-CH is a prevalent and adverse prognostic factor in solid tumors, highlighting a novel link between age-related hematologic clonal expansion and tumor evolution by influencing the tumor microenvironment.
+
+<break time="700ms"/><break time="500ms"/>That concludes this episode of OncoBrief. <break time="300ms"/> Thank you for listening. <break time="300ms"/> For more detailed information on these articles, please visit the OncoBrief website or check the original publications. <break time="300ms"/> Stay tuned for next week's update on the latest oncology research.

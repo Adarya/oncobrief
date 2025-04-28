@@ -1,0 +1,19 @@
+Welcome to OncoBrief, <break time="200ms"/> your weekly podcast summarizing the latest oncology research. This episode covers Apr 22, 2025 - Apr 26, 2025. <break time="300ms"/> We'll discuss 2 recent publications from top oncology journals.<break time="700ms"/>
+
+Here's a quick overview of the articles we'll cover:<break time="300ms"/>
+
+Article 1: Tumor-Infiltrating Clonal Hematopoiesis.. Published in The New England journal of medicine.
+Article 2: ADAGIO: A Phase IIb, Open-Label, Single-Arm, Multicenter Study Assessing the Efficacy and Safety of Adavosertib (AZD1775) as Treatment for Recurrent or Persistent Uterine Serous Carcinoma.. Published in Journal of clinical oncology : official journal of the American Society of Clinical Oncology.
+<break time="1000ms"/>Now, let's explore each article in more detail.<break time="700ms"/>
+
+<emphasis>Article 1:</emphasis> Tumor-Infiltrating Clonal Hematopoiesis..
+From Pich and colleagues.
+Published in The New England journal of medicine in 2025.<break time="300ms"/>
+This study characterized tumor-infiltrating clonal hematopoiesis (TI-CH), where CHIP mutations are detected in tumors, across large cohorts of patients with NSCLC and other solid tumors. They found that TI-CH was present in a significant proportion of patients with CHIP and independently predicted an increased risk of disease recurrence or death in NSCLC and increased all-cause mortality in pan-cancer cohorts. Furthermore, TET2 mutations were strongly associated with TI-CH and functionally demonstrated the ability to enhance monocyte migration, enrich the tumor microenvironment with myeloid cells, and promote tumor growth in experimental models. These findings indicate that aging-related clonal hematopoiesis, specifically when infiltrating the tumor, plays a significant role in cancer evolution and patient prognosis.
+
+<break time="700ms"/><emphasis>Article 2:</emphasis> ADAGIO: A Phase IIb, Open-Label, Single-Arm, Multicenter Study Assessing the Efficacy and Safety of Adavosertib (AZD1775) as Treatment for Recurrent or Persistent Uterine Serous Carcinoma..
+From Liu and colleagues.
+Published in Journal of clinical oncology : official journal of the American Society of Clinical Oncology in 2025.<break time="300ms"/>
+This phase IIb, single-arm study (ADAGIO) evaluated adavosertib in 104 patients with recurrent/persistent uterine serous carcinoma previously treated with platinum-based chemotherapy. The study demonstrated an objective response rate of 26.0% by blinded independent central review, with a median duration of response of 4.7 months and median progression-free survival of 2.8 months. Exploratory biomarker analysis suggested a potential association between CCNE1 amplification/high cyclin E1 expression and response. However, adavosertib at 300 mg once daily was poorly tolerated, with 60.6% of patients experiencing Grade ≥3 treatment-related adverse events, leading to discontinuation in 14.7%. While showing some activity, the toxicity profile at this dose necessitates further investigation into optimized dosing or alternative strategies for Wee1 inhibition in this patient population, potentially guided by biomarkers.
+
+<break time="700ms"/><break time="500ms"/>That concludes this episode of OncoBrief. <break time="300ms"/> Thank you for listening. <break time="300ms"/> For more detailed information on these articles, please visit the OncoBrief website or check the original publications. <break time="300ms"/> Stay tuned for next week's update on the latest oncology research.

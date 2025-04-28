@@ -1,0 +1,13 @@
+Welcome to OncoBrief, <break time="200ms"/> your weekly podcast summarizing the latest oncology research. This episode covers Apr 7, 2025 - Apr 8, 2025. <break time="300ms"/> We'll discuss 1 recent publications from top oncology journals.<break time="700ms"/>
+
+Here's a quick overview of the articles we'll cover:<break time="300ms"/>
+
+Article 1: They Not Like Us: Evaluating the Diverse Strategies in Locally Advanced Rectal Cancer Treatment.. Published in Journal of clinical oncology : official journal of the American Society of Clinical Oncology.
+<break time="1000ms"/>Now, let's explore each article in more detail.<break time="700ms"/>
+
+<emphasis>Article 1:</emphasis> They Not Like Us: Evaluating the Diverse Strategies in Locally Advanced Rectal Cancer Treatment..
+From Shah and colleagues.
+Published in Journal of clinical oncology : official journal of the American Society of Clinical Oncology in 2025.<break time="300ms"/>
+The Oncology Grand Rounds series is designed to contextualize original research reports within clinical practice. Each installment employs a structured approach, beginning with a case presentation, followed by a discussion of diagnostic and management challenges, a review of relevant literature, and suggested management strategies. This methodology aims to facilitate clinicians' understanding of how to apply key study findings, including those published in the Journal of Clinical Oncology, to patient care. Ultimately, the series serves as a practical guide for translating research into actionable clinical decisions.
+
+<break time="700ms"/><break time="500ms"/>That concludes this episode of OncoBrief. <break time="300ms"/> Thank you for listening. <break time="300ms"/> For more detailed information on these articles, please visit the OncoBrief website or check the original publications. <break time="300ms"/> Stay tuned for next week's update on the latest oncology research.
