@@ -20,12 +20,21 @@ export default function DigestView({ digestId }) {
   const [error, setError] = useState(null);
   const [podcast, setPodcast] = useState(null);
   const [generatingPodcast, setGeneratingPodcast] = useState(false);
+  const [generatingPodcastStatus, setGeneratingPodcastStatus] = useState('');
   const [podcastError, setPodcastError] = useState(null);
   const [emailAddress, setEmailAddress] = useState('');
   const [emailSending, setEmailSending] = useState(false);
   const [emailError, setEmailError] = useState(null);
   const [emailSuccess, setEmailSuccess] = useState(false);
   const [fixedArticles, setFixedArticles] = useState(false);
+  const [showEmailForm, setShowEmailForm] = useState(false);
+  const [viewMode, setViewMode] = useState('grid');
+  const [showFilter, setShowFilter] = useState(false);
+  const [filterJournal, setFilterJournal] = useState('');
+  const [filterYear, setFilterYear] = useState('');
+  const [showSort, setShowSort] = useState(false);
+  const [reportTierView, setReportTierView] = useState(false);
+  const [filterType, setFilterType] = useState('');
 
   useEffect(() => {
     const fetchDigestData = () => {
@@ -88,7 +97,7 @@ export default function DigestView({ digestId }) {
         setPodcast(podcastData);
       } catch (err) {
         console.error('Error fetching digest data:', err);
-        setError('Failed to load digest content. Please try again later.');
+        setError('Failed to load digest data. Please try again later.');
       } finally {
         setLoading(false);
       }
@@ -98,141 +107,83 @@ export default function DigestView({ digestId }) {
   }, [digestId]);
   
   const handleGeneratePodcast = async () => {
-    if (!digestId || articles.length === 0) return;
+    if (!digest || articles.length === 0) {
+      setPodcastError('No articles available to generate podcast');
+      return;
+    }
+    
+    setGeneratingPodcast(true);
+    setPodcastError(null);
+    setGeneratingPodcastStatus('Preparing your podcast...');
     
     try {
-      setGeneratingPodcast(true);
-      setPodcastError(null);
-      
-      const digestTitle = digest.title || `Weekly Oncology Digest: ${formatDateRange(digest.weekStart, digest.weekEnd)}`;
-      
-      // Call the API route to generate a podcast
+      // Call the API to generate a podcast
       const response = await fetch('/api/generatePodcast', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ 
-          digestId: digestId,
-          digestTitle: digestTitle,
-          articles: articles
+        body: JSON.stringify({
+          digestId: digest.id,
+          digestTitle: digest.title || formatDateRange(digest.weekStart, digest.weekEnd),
+          articles: articles,
         }),
       });
       
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Server error: ${response.status} - ${errorText}`);
+      }
+      
       const data = await response.json();
       
-      if (!response.ok || !data.success) {
-        // Check if we at least got a script URL even if TTS failed
-        if (data.scriptUrl) {
-          setPodcastError(`${data.error} You can still download the script.`);
-          // Save just the script URL
-          const podcastData = {
-            digestId: digestId,
-            scriptUrl: data.scriptUrl,
-            createdAt: new Date().toISOString()
-          };
-          const savedPodcast = savePodcast(podcastData);
-          setPodcast(savedPodcast);
-          return;
-        }
+      if (!data.success) {
         throw new Error(data.error || 'Failed to generate podcast');
       }
       
-      // Save podcast data to localStorage
-      const podcastData = {
-        digestId: digestId,
+      console.log('Podcast generated:', data);
+      
+      // Update podcast state with the new data
+      setPodcast({
+        digestId: digest.id,
         audioUrl: data.audioUrl,
         scriptUrl: data.scriptUrl,
         script: data.script,
-        createdAt: new Date().toISOString()
-      };
-      
-      const savedPodcast = savePodcast(podcastData);
-      setPodcast(savedPodcast);
+        createdAt: new Date().toISOString(),
+      });
     } catch (err) {
       console.error('Error generating podcast:', err);
-      setPodcastError(err.message || 'An error occurred while generating the podcast');
+      setPodcastError(`Failed to generate podcast: ${err.message}`);
     } finally {
       setGeneratingPodcast(false);
+      setGeneratingPodcastStatus('');
     }
   };
 
   const handleSendEmail = async (e) => {
     e.preventDefault();
     
-    if (!digestId || !emailAddress) return;
-    
-    // Simple email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(emailAddress)) {
-      setEmailError('Please enter a valid email address');
+    if (!digest || articles.length === 0 || !emailAddress) {
+      setEmailError('Please enter your email address');
       return;
     }
     
+    setEmailSending(true);
+    setEmailError(null);
+    
     try {
-      setEmailSending(true);
-      setEmailError(null);
-      setEmailSuccess(false);
-      
-      console.log('Sending email for digest:', digestId);
-      console.log('Email address:', emailAddress);
-      console.log('Articles count:', articles.length);
-      
-      // If no podcast exists yet, generate one first
-      let currentPodcast = podcast;
-      if (!currentPodcast && articles.length > 0) {
-        try {
-          setEmailError('Generating podcast before sending email...');
-          
-          const digestTitle = digest.title || `Weekly Oncology Digest: ${formatDateRange(digest.weekStart, digest.weekEnd)}`;
-          
-          // Call the API route to generate a podcast
-          const podcastResponse = await fetch('/api/generatePodcast', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ 
-              digestId: digestId,
-              digestTitle: digestTitle,
-              articles: articles
-            }),
-          });
-          
-          const podcastData = await podcastResponse.json();
-          
-          if (podcastResponse.ok && podcastData.success) {
-            // Save podcast data to localStorage
-            const podcastInfo = {
-              digestId: digestId,
-              audioUrl: podcastData.audioUrl,
-              scriptUrl: podcastData.scriptUrl,
-              script: podcastData.script,
-              createdAt: new Date().toISOString()
-            };
-            
-            const savedPodcast = savePodcast(podcastInfo);
-            setPodcast(savedPodcast);
-            currentPodcast = savedPodcast;
-            setEmailError(null);
-          }
-        } catch (err) {
-          console.error('Error generating podcast before email:', err);
-          // Continue with email sending even if podcast generation fails
-        }
-      }
-      
-      // Call the API route to send email
+      // Call the API to send the email
       const response = await fetch('/api/sendEmail', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ 
-          digestId: digestId,
+        body: JSON.stringify({
           recipientEmail: emailAddress,
-          articlesOverride: articles.length > 0 ? articles : null,
-          podcastOverride: currentPodcast // Include the podcast data
+          digestId: digest.id,
+          digestTitle: digest.title || formatDateRange(digest.weekStart, digest.weekEnd),
+          articlesOverride: articles,
+          podcastUrl: podcast ? window.location.origin + podcast.audioUrl : null,
         }),
       });
       
@@ -300,136 +251,379 @@ export default function DigestView({ digestId }) {
   
   const digestTitle = digest.title || `Week of ${formatDateRange(digest.weekStart, digest.weekEnd)}`;
   
+  // Group articles by type into report tiers
+  const getArticlesByTier = () => {
+    // Tier 1: Clinical trials and translational research
+    const tier1Articles = articles.filter(article => {
+      const type = article.articleType || getArticleTypeFromKeywords(article);
+      return type === 'Clinical trial' || type === 'Translational';
+    });
+    
+    // Tier 2: Basic science and other
+    const tier2Articles = articles.filter(article => {
+      const type = article.articleType || getArticleTypeFromKeywords(article);
+      return type === 'Basic science' || type === 'Other';
+    });
+    
+    return { tier1Articles, tier2Articles };
+  };
+  
+  // Helper function to get article type from keywords (fallback method)
+  const getArticleTypeFromKeywords = (article) => {
+    const textToAnalyze = `${article.title} ${article.abstract}`.toLowerCase();
+    
+    if (textToAnalyze.includes('trial') || textToAnalyze.includes('phase') || textToAnalyze.includes('randomized')) {
+      return 'Clinical trial';
+    }
+    
+    if (textToAnalyze.includes('biomarker') || textToAnalyze.includes('targeted') || 
+        textToAnalyze.includes('mechanism') || textToAnalyze.includes('pathway')) {
+      return 'Translational';
+    }
+    
+    if (textToAnalyze.includes('model') || textToAnalyze.includes('vitro') || 
+        textToAnalyze.includes('vivo') || textToAnalyze.includes('cell')) {
+      return 'Basic science';
+    }
+    
+    return 'Other';
+  };
+  
+  // Filter articles by type
+  const filterArticlesByType = (articlesToFilter) => {
+    if (!filterType) return articlesToFilter;
+    
+    return articlesToFilter.filter(article => {
+      const type = article.articleType || getArticleTypeFromKeywords(article);
+      return type === filterType;
+    });
+  };
+
+  // Modify the existing filteredArticles definition to include type filtering:
+  const filteredArticles = filterArticlesByType(
+    articles.filter(article => {
+      // Apply existing journal and year filters
+      if (filterJournal && article.journal !== filterJournal) return false;
+      if (filterYear && article.pubYear !== filterYear) return false;
+      return true;
+    })
+  );
+  
+  // Get articles grouped by tier
+  const { tier1Articles, tier2Articles } = getArticlesByTier();
+  
+  const handleSort = (field, direction) => {
+    const sortedArticles = [...filteredArticles].sort((a, b) => {
+      const valueA = a[field].toLowerCase();
+      const valueB = b[field].toLowerCase();
+      if (valueA < valueB) return direction === 'asc' ? -1 : 1;
+      if (valueA > valueB) return direction === 'asc' ? 1 : -1;
+      return 0;
+    });
+    setArticles(sortedArticles);
+  };
+  
   return (
-    <div>
-      {fixedArticles && (
-        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-          <p>Articles association fixed! The digest now has properly linked articles.</p>
-        </div>
-      )}
-      
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-800">
-          Weekly Oncology Digest
-        </h2>
-        <p className="text-lg text-gray-600">
-          {digestTitle}
-        </p>
-        
-        {/* Email Subscription Form */}
-        <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-          <h3 className="text-lg font-semibold text-blue-900 mb-3 flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-              <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-              <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
-            </svg>
-            Receive this digest by email
-          </h3>
+    <div className="bg-white shadow-md rounded-lg overflow-hidden border border-gray-100">
+      <div className="p-6">
+        <div className="flex justify-between items-start mb-4">
+          <h2 className="text-2xl font-bold text-gray-800">{digestTitle}</h2>
           
-          {emailError && (
-            <div className="mb-3 text-red-600 text-sm">
-              <p>{emailError}</p>
-            </div>
-          )}
-          
-          {emailSuccess && (
-            <div className="mb-3 text-green-600 text-sm bg-green-50 p-2 rounded">
-              <p>Digest sent successfully! Check your inbox.</p>
-            </div>
-          )}
-          
-          <form onSubmit={handleSendEmail} className="flex flex-col sm:flex-row gap-3">
-            <input
-              type="email"
-              value={emailAddress}
-              onChange={(e) => setEmailAddress(e.target.value)}
-              placeholder="Enter your email address"
-              className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              disabled={emailSending}
-              required
-            />
-            <button
-              type="submit"
-              disabled={emailSending || !emailAddress || articles.length === 0}
-              className={`px-4 py-2 rounded-md text-white font-medium ${
-                emailSending || !emailAddress || articles.length === 0
-                  ? 'bg-gray-400 cursor-not-allowed'
-                  : 'bg-blue-600 hover:bg-blue-700'
-              }`}
-            >
-              {emailSending ? (
-                <>
-                  <span className="inline-block spinner-small mr-2"></span>
-                  Sending...
-                </>
-              ) : (
-                'Send to Email'
-              )}
-            </button>
-          </form>
-          <p className="mt-2 text-xs text-blue-700">
-            Get this week's oncology digest with article summaries and podcast delivered to your inbox.
-          </p>
-        </div>
-        
-        {/* Podcast section */}
-        {podcast ? (
-          <PodcastPlayer audioUrl={podcast.audioUrl} scriptUrl={podcast.scriptUrl} digestTitle={digestTitle} />
-        ) : (
-          <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4 mb-6 mt-4">
-            <h3 className="text-lg font-semibold text-indigo-900 mb-3 flex items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
-              </svg>
-              OncoBrief Podcast
-            </h3>
-            
-            {podcastError && (
-              <div className="mb-3 text-red-600 text-sm">
-                <p>{podcastError}</p>
-              </div>
+          <div className="flex space-x-2">
+            {podcast ? (
+              <button onClick={() => window.open(podcast.audioUrl, '_blank')} className="inline-flex items-center text-indigo-600 hover:text-indigo-800">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15.536a5 5 0 017.072 0m-9.9-2.828a9 9 0 0112.728 0" />
+                </svg>
+                Listen to Podcast
+              </button>
+            ) : (
+              <button 
+                onClick={handleGeneratePodcast} 
+                disabled={generatingPodcast}
+                className={`inline-flex items-center ${generatingPodcast ? 'text-gray-400 cursor-not-allowed' : 'text-indigo-600 hover:text-indigo-800'}`}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15.536a5 5 0 017.072 0m-9.9-2.828a9 9 0 0112.728 0" />
+                </svg>
+                {generatingPodcast ? 'Generating...' : 'Generate Podcast'}
+              </button>
             )}
             
-            <p className="mb-4 text-indigo-700">
-              Generate an AI-narrated podcast summarizing this digest's research articles.
-            </p>
-            
-            <button
-              onClick={handleGeneratePodcast}
-              disabled={generatingPodcast || articles.length === 0}
-              className={`px-4 py-2 rounded-md text-white font-medium ${
-                generatingPodcast
-                  ? 'bg-gray-400 cursor-not-allowed'
-                  : articles.length === 0
-                    ? 'bg-gray-400 cursor-not-allowed'
-                    : 'bg-indigo-600 hover:bg-indigo-700'
-              }`}
+            <button 
+              onClick={() => setShowEmailForm(!showEmailForm)} 
+              className="inline-flex items-center text-indigo-600 hover:text-indigo-800"
             >
-              {generatingPodcast ? (
-                <>
-                  <span className="inline-block spinner-small mr-2"></span>
-                  Generating Podcast...
-                </>
-              ) : articles.length === 0 ? (
-                'No Articles Available'
-              ) : (
-                'Generate Podcast'
-              )}
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+              Email Digest
             </button>
+          </div>
+        </div>
+        
+        {showEmailForm && (
+          <div className="bg-gray-50 p-4 mb-6 rounded-md">
+            <form onSubmit={handleSendEmail} className="flex flex-wrap gap-2">
+              <div className="flex-grow">
+                <input 
+                  type="email" 
+                  value={emailAddress} 
+                  onChange={(e) => setEmailAddress(e.target.value)} 
+                  placeholder="Enter your email address" 
+                  className="w-full p-2 border border-gray-300 rounded-md"
+                  required
+                />
+              </div>
+              <button 
+                type="submit" 
+                disabled={emailSending} 
+                className={`px-4 py-2 rounded-md text-white ${emailSending ? 'bg-gray-400' : 'bg-indigo-600 hover:bg-indigo-700'}`}
+              >
+                {emailSending ? 'Sending...' : 'Send'}
+              </button>
+            </form>
+            
+            {emailError && (
+              <div className="mt-2 text-red-600 text-sm">{emailError}</div>
+            )}
+            
+            {emailSuccess && (
+              <div className="mt-2 text-green-600 text-sm">Email sent successfully!</div>
+            )}
           </div>
         )}
         
-        {articles.length === 0 ? (
-          <div className="mt-6 text-center py-12 bg-gray-50 rounded-lg">
-            <p className="text-gray-600">No articles found for this week.</p>
-          </div>
-        ) : (
-          <div className="mt-6 grid gap-6 md:grid-cols-1 lg:grid-cols-1">
-            {articles.map((article) => (
-              <ArticleCard key={article.id} article={article} />
-            ))}
+        {generatingPodcastStatus && (
+          <div className="mb-4 bg-indigo-50 p-3 rounded-md text-indigo-700">
+            <div className="flex items-center">
+              <svg className="animate-spin h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              {generatingPodcastStatus}
+            </div>
           </div>
         )}
+        
+        {podcastError && (
+          <div className="mb-4 bg-red-100 border-l-4 border-red-500 text-red-700 p-4">
+            <p className="font-bold">Error</p>
+            <p>{podcastError}</p>
+          </div>
+        )}
+        
+        {fixedArticles && (
+          <div className="mb-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4">
+            <p className="font-bold">Note</p>
+            <p>We've fixed some article associations for this digest. Please let us know if you notice any issues.</p>
+          </div>
+        )}
+        
+        {podcast && (
+          <div className="mb-6">
+            <PodcastPlayer audioUrl={podcast.audioUrl} />
+          </div>
+        )}
+        
+        <div className="mb-6">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-semibold text-gray-800">
+              Articles ({articles.length})
+            </h3>
+            
+            <div className="flex space-x-3">
+              {/* View toggle buttons */}
+              <div className="flex bg-gray-100 rounded-md p-1">
+                <button 
+                  onClick={() => setViewMode('grid')}
+                  className={`px-3 py-1 rounded-md ${viewMode === 'grid' ? 'bg-white shadow-sm' : 'text-gray-600'}`}
+                  aria-label="Grid View"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                  </svg>
+                </button>
+                <button 
+                  onClick={() => setViewMode('list')}
+                  className={`px-3 py-1 rounded-md ${viewMode === 'list' ? 'bg-white shadow-sm' : 'text-gray-600'}`}
+                  aria-label="List View"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                </button>
+              </div>
+              
+              {/* Report Tier Toggle */}
+              <div className="flex items-center space-x-2 bg-white rounded-md p-2 shadow-sm">
+                <span className="text-sm text-gray-600">View Mode:</span>
+                <button
+                  onClick={() => setReportTierView(false)}
+                  className={`px-3 py-1 text-sm rounded-md ${!reportTierView ? 'bg-indigo-100 text-indigo-800' : 'text-gray-600 hover:bg-gray-100'}`}
+                >
+                  All Articles
+                </button>
+                <button
+                  onClick={() => setReportTierView(true)}
+                  className={`px-3 py-1 text-sm rounded-md ${reportTierView ? 'bg-indigo-100 text-indigo-800' : 'text-gray-600 hover:bg-gray-100'}`}
+                >
+                  By Classification
+                </button>
+              </div>
+              
+              {/* Filter and Sort Options */}
+              <div className="flex flex-col sm:flex-row mb-6 space-y-2 sm:space-y-0 sm:space-x-2">
+                {/* View Mode Toggle */}
+                <div className="flex items-center space-x-2 bg-white rounded-md p-2 shadow-sm">
+                  <button
+                    onClick={() => setViewMode('grid')}
+                    className={`px-3 py-1 rounded-md ${viewMode === 'grid' ? 'bg-indigo-100 text-indigo-800' : 'text-gray-600 hover:bg-gray-100'}`}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={() => setViewMode('list')}
+                    className={`px-3 py-1 rounded-md ${viewMode === 'list' ? 'bg-indigo-100 text-indigo-800' : 'text-gray-600 hover:bg-gray-100'}`}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                  </button>
+                </div>
+                
+                {/* Filter Button and Dropdown */}
+                <div className="relative">
+                  <button 
+                    onClick={() => {
+                      setShowFilter(!showFilter);
+                      if (showSort) setShowSort(false);
+                    }}
+                    className="flex items-center justify-center space-x-1 bg-white px-4 py-2 rounded-md shadow-sm text-sm font-medium text-gray-600 hover:bg-gray-50"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                    </svg>
+                    <span>Filter</span>
+                  </button>
+                  
+                  {showFilter && (
+                    <div className="absolute z-10 mt-2 w-64 bg-white rounded-md shadow-lg p-4">
+                      <div className="mb-4">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Journal</label>
+                        <select
+                          value={filterJournal}
+                          onChange={(e) => setFilterJournal(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                        >
+                          <option value="">All Journals</option>
+                          {Array.from(new Set(articles.map(a => a.journal))).map(journal => (
+                            <option key={journal} value={journal}>{journal}</option>
+                          ))}
+                        </select>
+                      </div>
+                      
+                      <div className="mb-4">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Year</label>
+                        <select
+                          value={filterYear}
+                          onChange={(e) => setFilterYear(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                        >
+                          <option value="">All Years</option>
+                          {Array.from(new Set(articles.map(a => a.pubYear))).sort((a, b) => b - a).map(year => (
+                            <option key={year} value={year}>{year}</option>
+                          ))}
+                        </select>
+                      </div>
+                      
+                      <div className="mb-4">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Article Type</label>
+                        <select
+                          value={filterType}
+                          onChange={(e) => setFilterType(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                        >
+                          <option value="">All Types</option>
+                          <option value="Clinical trial">Clinical trial</option>
+                          <option value="Translational">Translational</option>
+                          <option value="Basic science">Basic science</option>
+                          <option value="Other">Other</option>
+                        </select>
+                      </div>
+                      
+                      <div className="flex justify-end">
+                        <button
+                          onClick={() => {
+                            setFilterJournal('');
+                            setFilterYear('');
+                            setFilterType('');
+                          }}
+                          className="text-sm text-indigo-600 hover:text-indigo-800"
+                        >
+                          Reset Filters
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Replace the articles display section with a conditional rendering based on report tier view */}
+          {reportTierView ? (
+            <div className="space-y-8">
+              {/* Tier 1: Clinical and Translational Articles */}
+              <div>
+                <h3 className="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">
+                  Tier 1: Clinical & Translational Research <span className="text-sm font-normal text-gray-500">({tier1Articles.length} articles)</span>
+                </h3>
+                
+                {tier1Articles.length === 0 ? (
+                  <p className="text-gray-500 italic">No articles in this category</p>
+                ) : (
+                  <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 gap-6' : 'space-y-6'}>
+                    {tier1Articles.map(article => (
+                      <ArticleCard key={article.pmid} article={article} />
+                    ))}
+                  </div>
+                )}
+              </div>
+              
+              {/* Tier 2: Basic Science and Other Articles */}
+              <div>
+                <h3 className="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">
+                  Tier 2: Basic Science & Other <span className="text-sm font-normal text-gray-500">({tier2Articles.length} articles)</span>
+                </h3>
+                
+                {tier2Articles.length === 0 ? (
+                  <p className="text-gray-500 italic">No articles in this category</p>
+                ) : (
+                  <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 gap-6' : 'space-y-6'}>
+                    {tier2Articles.map(article => (
+                      <ArticleCard key={article.pmid} article={article} />
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 gap-6' : 'space-y-6'}>
+              {filteredArticles.map(article => (
+                <ArticleCard key={article.pmid} article={article} />
+              ))}
+            </div>
+          )}
+          
+          {filteredArticles.length === 0 && (
+            <div className="text-center py-8 text-gray-500">
+              No articles match your current filters.
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

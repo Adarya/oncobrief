@@ -33,7 +33,7 @@ function cleanXmlText(text) {
 }
 
 // Function to search PubMed for articles
-async function searchPubMed(query, maxResults = 50) {
+async function searchPubMed(query, maxResults = 100) {
   console.log(`Searching PubMed for: '${query}'`);
   
   const searchUrl = `${BASE_URL}esearch.fcgi`;
@@ -50,6 +50,11 @@ async function searchPubMed(query, maxResults = 50) {
     
     // Parse the XML response
     const responseText = response.data;
+    
+    // Extract count of total results to check if pagination is needed
+    const countMatch = responseText.match(/<Count>(\d+)<\/Count>/);
+    const totalResults = countMatch ? parseInt(countMatch[1]) : 0;
+    console.log(`Total results found: ${totalResults}`);
     
     // Simplistic XML parsing
     const idListMatch = responseText.match(/<IdList>(.*?)<\/IdList>/s);
@@ -69,7 +74,15 @@ async function searchPubMed(query, maxResults = 50) {
       pmids.push(match[1]);
     }
     
-    console.log(`Found ${pmids.length} PMIDs.`);
+    console.log(`Found ${pmids.length} PMIDs in current batch.`);
+    
+    // If there are more results than we got in this batch and maxResults is less than totalResults,
+    // we could implement pagination here in future by using the WebEnv and QueryKey parameters
+    if (totalResults > pmids.length && pmids.length < maxResults) {
+      console.log(`Note: There are ${totalResults - pmids.length} more results available.`);
+      // Future enhancement: Implement pagination for very large result sets
+    }
+    
     await delay(REQUEST_DELAY_MS);
     
     return pmids;
@@ -202,63 +215,118 @@ async function fetchPubMedDetails(pmids) {
   }
 }
 
-// Function to generate AI summary using Gemini - Direct API implementation
-async function generateAISummary(abstract) {
-  try {
-    // Direct API call to Gemini API matching the Python implementation
-    // Bypassing the Node.js SDK implementation that adds "models/" prefix
-    // const geminiEndpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent";
-    const geminiEndpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-04-17:generateContent";
-    
-    const requestData = {
-      contents: [
+// Function to generate AI summary and classification using Gemini
+async function generateAISummaryWithClassification(abstract, title) {
+  // Maximum number of retries
+  const MAX_RETRIES = 3;
+  let retryCount = 0;
+  let lastError = null;
+  
+  while (retryCount < MAX_RETRIES) {
+    try {
+      console.log(`Attempt ${retryCount + 1}/${MAX_RETRIES} to generate summary and classification for: "${title.substring(0, 50)}..."`);
+      
+      // Direct API call to Gemini API
+      const geminiEndpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-04-17:generateContent";
+      
+      const requestData = {
+        contents: [
+          {
+            parts: [
+              {
+                text: `Analyze the following medical research abstract and perform two tasks:
+
+TASK 1: Summarize the abstract in 3-5 concise sentences. Focus on the key findings, methodology, and implications. Use clear, professional language suitable for medical professionals.
+
+TASK 2: Classify this paper into ONE of these categories:
+- Clinical trial (if it describes a clinical study with patients, trials, treatments, or outcomes)
+- Translational (if it bridges basic science and clinical applications, involves biomarkers, pathways, or mechanisms with clinical relevance)
+- Basic science (if it focuses on fundamental biology, laboratory experiments, animal models, cellular/molecular mechanisms)
+- Other (if it doesn't clearly fit any of the above categories)
+
+Title: ${title}
+Abstract:
+${abstract}
+
+Format your response exactly like this:
+SUMMARY: [Your 3-5 sentence summary]
+CLASSIFICATION: [Single category name]`
+              }
+            ]
+          }
+        ],
+        generationConfig: {
+          temperature: 0.2,
+          maxOutputTokens: 1500
+        }
+      };
+      
+      console.log("Making API call to Gemini for summary and classification");
+      const response = await axios.post(
+        `${geminiEndpoint}?key=${GEMINI_API_KEY}`, 
+        requestData,
         {
-          parts: [
-            {
-              text: `Summarize the following medical research abstract in 3-5 concise sentences. 
-                     Focus on the key findings, methodology, and implications. 
-                     Use clear, professional language that would be suitable for medical professionals.
-                     Make sure your summary is complete and ends properly with a concluding thought.
-                     
-                     Abstract:
-                     ${abstract}`
-            }
-          ]
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          timeout: 30000 // 30 second timeout
         }
-      ],
-      generationConfig: {
-        temperature: 0.2,
-        maxOutputTokens: 1500 // Increase max tokens to ensure complete summaries
-      }
-    };
-    
-    console.log("Making direct API call to Gemini");
-    const response = await axios.post(
-      `${geminiEndpoint}?key=${GEMINI_API_KEY}`, 
-      requestData,
-      {
-        headers: {
-          'Content-Type': 'application/json'
+      );
+      
+      // Extract the response text
+      if (response.data && 
+          response.data.candidates && 
+          response.data.candidates[0] && 
+          response.data.candidates[0].content && 
+          response.data.candidates[0].content.parts && 
+          response.data.candidates[0].content.parts[0]) {
+        
+        const responseText = response.data.candidates[0].content.parts[0].text.trim();
+        
+        // Parse the response to extract summary and classification
+        const summaryMatch = responseText.match(/SUMMARY:\s*([\s\S]*?)(?=CLASSIFICATION:|$)/i);
+        const classificationMatch = responseText.match(/CLASSIFICATION:\s*(.*?)(?:\n|$)/i);
+        
+        const summary = summaryMatch ? summaryMatch[1].trim() : generateFallbackSummary(abstract);
+        
+        // Validate the classification to ensure it's one of our expected categories
+        let classification = 'Other';
+        if (classificationMatch) {
+          const rawClassification = classificationMatch[1].trim();
+          if (/clinical\s*trial/i.test(rawClassification)) {
+            classification = 'Clinical trial';
+          } else if (/translational/i.test(rawClassification)) {
+            classification = 'Translational';
+          } else if (/basic\s*science/i.test(rawClassification)) {
+            classification = 'Basic science';
+          }
         }
+        
+        console.log(`Generated summary (${summary.length} chars) and classification: ${classification}`);
+        return { summary, classification };
+      } else {
+        throw new Error("Unexpected response structure from Gemini API");
       }
-    );
-    
-    // Extract the summary from the response
-    if (response.data && 
-        response.data.candidates && 
-        response.data.candidates[0] && 
-        response.data.candidates[0].content && 
-        response.data.candidates[0].content.parts && 
-        response.data.candidates[0].content.parts[0]) {
-      return response.data.candidates[0].content.parts[0].text.trim();
-    } else {
-      console.warn("Unexpected response structure from Gemini API:", JSON.stringify(response.data, null, 2));
-      return generateFallbackSummary(abstract);
+    } catch (error) {
+      lastError = error;
+      console.error(`Attempt ${retryCount + 1}/${MAX_RETRIES} failed:`, error.message);
+      
+      // Exponential backoff with jitter for retries
+      if (retryCount < MAX_RETRIES - 1) {
+        const backoffTime = Math.floor(Math.random() * 1000 + 1000 * Math.pow(2, retryCount));
+        console.log(`Retrying in ${backoffTime}ms...`);
+        await delay(backoffTime);
+      }
+      retryCount++;
     }
-  } catch (error) {
-    console.error('Error generating AI summary:', error.response?.data || error.message || error);
-    return generateFallbackSummary(abstract);
   }
+  
+  // All retries failed, use fallback
+  console.error('All attempts to generate AI summary failed:', lastError.response?.data || lastError.message || lastError);
+  return { 
+    summary: generateFallbackSummary(abstract),
+    classification: 'Other'
+  };
 }
 
 // Fallback summary generation when Gemini API fails
@@ -345,7 +413,11 @@ export async function POST(request) {
     };
     
     // Build the journal terms for PubMed search
-    const journalTerms = journals.map(journal => `"${journal.name}"[Journal]`).join(' OR ');
+    const journalTerms = journals.map(journal => {
+      // Handle both string journals and journal objects with name property
+      const journalName = typeof journal === 'string' ? journal : journal.name;
+      return `"${journalName}"[Journal]`;
+    }).join(' OR ');
     
     // Build the title/abstract terms for oncology-related content
     const titleAbstractTerms = (
@@ -399,7 +471,7 @@ export async function POST(request) {
     
     // Process each article and add AI summary
     const processedArticles = [];
-    const processLimit = Math.min(articles.length, 15); // Limit to 15 articles for performance
+    const processLimit = Math.min(articles.length, 50); // Increased from 15 to 50
     
     for (let i = 0; i < processLimit; i++) {
       const article = articles[i];
@@ -407,14 +479,18 @@ export async function POST(request) {
       try {
         // Generate AI summary if abstract is available
         let aiSummary = null;
+        let articleType = 'Other'; // Default classification
         
         if (article.abstract && article.abstract !== 'No abstract available.') {
-          aiSummary = await generateAISummary(article.abstract);
+          const { summary, classification } = await generateAISummaryWithClassification(article.abstract, article.title);
+          aiSummary = summary;
+          articleType = classification;
         }
         
         processedArticles.push({
           ...article,
           aiSummary,
+          articleType, // Store the AI-generated classification
           digestId: 'current', // Will be updated with actual digestId
         });
       } catch (error) {

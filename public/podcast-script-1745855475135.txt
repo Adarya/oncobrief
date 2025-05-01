@@ -1,0 +1,43 @@
+<speak>Welcome to OncoBrief, <break time="200ms"/> your weekly podcast summarizing the latest oncology research. This episode covers Apr 21, 2025 - Apr 28, 2025. <break time="300ms"/> We'll discuss 6 recent publications from top oncology journals.<break time="700ms"/>
+
+Here's a quick overview of the articles we'll cover:<break time="300ms"/>
+
+Article 1: Spatial mapping of transcriptomic plasticity in metastatic pancreatic cancer.. Published in Nature.
+Article 2: Targeting PIKfyve-driven lipid metabolism in pancreatic cancer.. Published in Nature.
+Article 3: Geographic and age variations in mutational processes in colorectal cancer.. Published in Nature.
+Article 4: Tumor-Infiltrating Clonal Hematopoiesis.. Published in The New England journal of medicine.
+Article 5: ADAGIO: A Phase IIb, Open-Label, Single-Arm, Multicenter Study Assessing the Efficacy and Safety of Adavosertib (AZD1775) as Treatment for Recurrent or Persistent Uterine Serous Carcinoma.. Published in Journal of clinical oncology : official journal of the American Society of Clinical Oncology.
+Article 6: What I Wish I Had Known: A Pediatric Oncologist's Transition to Survivorship Care.. Published in Journal of clinical oncology : official journal of the American Society of Clinical Oncology.
+<break time="1000ms"/>Now, let's explore each article in more detail.<break time="700ms"/>
+
+<emphasis level="strong">Article 1:</emphasis> Spatial mapping of transcriptomic plasticity in metastatic pancreatic cancer..
+From Pei and colleagues.
+Published in Nature in 2025.<break time="300ms"/>
+This study employed spatially resolved transcriptomics on rapid autopsy samples from 13 patients with treatment-refractory pancreatic cancer to map transcriptomic heterogeneity across primary tumors and diverse metastatic sites. Analysis revealed discernible transcriptomic shifts in cancer cell lineage states between primary and metastatic sites, alongside diverse patient-specific clonal evolution trajectories. Multiple lineage states co-exist within tissues, with aggressive 'basal-like' cells spatially correlating with myCAFs, a validated interaction linked to plasma cell exclusion potentially via CXCR4-CXCL12 signaling. These findings highlight the significant spatial transcriptomic and microenvironmental heterogeneity underlying treatment resistance and metastasis in pancreatic cancer, offering insights for future therapeutic strategies.
+
+<break time="700ms"/><emphasis level="strong">Article 2:</emphasis> Targeting PIKfyve-driven lipid metabolism in pancreatic cancer..
+From Cheng and colleagues.
+Published in Nature in 2025.<break time="300ms"/>
+This study identifies PIKfyve, a lipid kinase integral to lysosomal function, as essential for pancreatic ductal adenocarcinoma (PDAC) progression, demonstrated in a genetically engineered mouse model. Comprehensive metabolic analyses revealed that PIKfyve inhibition forces PDAC cells to upregulate de novo lipid synthesis, a process primarily driven by the KRAS-MAPK pathway. Targeting both PIKfyve and KRAS-MAPK simultaneously resulted in significant tumor burden elimination in preclinical human and mouse models. These findings suggest that disrupting lipid metabolism via PIKfyve inhibition creates a synthetic lethality with KRAS-MAPK-directed therapies, offering a promising new therapeutic strategy for PDAC.
+
+<break time="700ms"/><emphasis level="strong">Article 3:</emphasis> Geographic and age variations in mutational processes in colorectal cancer..
+From D&#xed and colleagues.
+Published in Nature in 2025.<break time="300ms"/>
+This study investigated mutational processes in 981 colorectal cancer genomes from 11 countries to explore geographic and age-related incidence variations. Analysis revealed differences in mutation burden and signatures, particularly in microsatellite-stable cases, with varying prevalence across countries suggesting diverse mutagenic exposures. Notably, signatures SBS88 and ID18, associated with the bacteria-produced mutagen colibactin, showed higher mutation loads in countries with higher CRC incidence and were significantly enriched in early-onset cancers (under 40). Colibactin exposure was further linked to APC driver mutations, contributing to approximately 25% of APC driver indels in positive cases. These findings suggest that early-life exposure to colibactin-producing bacteria may be a contributing factor to the rising incidence of early-onset colorectal cancer.
+
+<break time="700ms"/><emphasis level="strong">Article 4:</emphasis> Tumor-Infiltrating Clonal Hematopoiesis..
+From Pich and colleagues.
+Published in The New England journal of medicine in 2025.<break time="300ms"/>
+This study characterized tumor-infiltrating clonal hematopoiesis (TI-CH), defined as high variant-allele frequency CHIP mutations detected in tumors, across large cohorts of patients with NSCLC (n=421) and various solid tumors (n=49,351). They found TI-CH was present in a significant proportion of patients with CHIP and independently predicted increased risk of recurrence or death in NSCLC (HR 1.62 vs CHIP without TI-CH) and increased all-cause mortality in the pan-cancer cohort (HR 1.17 vs CHIP without TI-CH). Functional studies highlighted TET2 mutations as a key driver of TI-CH, demonstrating their ability to enhance monocyte migration, enrich the tumor microenvironment with myeloid cells, and promote tumor growth. These findings establish TI-CH as a novel prognostic marker in solid tumors and provide mechanistic insights into how aging-related clonal hematopoiesis can actively contribute to tumor progression and influence cancer evolution.
+
+<break time="700ms"/><emphasis level="strong">Article 5:</emphasis> ADAGIO: A Phase IIb, Open-Label, Single-Arm, Multicenter Study Assessing the Efficacy and Safety of Adavosertib (AZD1775) as Treatment for Recurrent or Persistent Uterine Serous Carcinoma..
+From Liu and colleagues.
+Published in Journal of clinical oncology : official journal of the American Society of Clinical Oncology in 2025.<break time="300ms"/>
+This phase IIb single-arm study assessed adavosertib (300 mg QD) in 104 patients with recurrent/persistent uterine serous carcinoma previously treated with platinum-based chemotherapy. The objective response rate was 26.0% (95% CI, 17.9-35.5), with a median duration of response of 4.7 months and median progression-free survival of 2.8 months. However, adavosertib demonstrated significant toxicity, with 60.6% experiencing Grade ≥3 treatment-related adverse events, leading to discontinuation in 14.7% due to toxicity. Exploratory biomarker analysis suggested a potential association between CCNE1 amplification/high cyclin E1 expression and response, indicating a need for further investigation into predictive markers and optimal dosing strategies for Wee1 inhibition in this population.
+
+<break time="700ms"/><emphasis level="strong">Article 6:</emphasis> What I Wish I Had Known: A Pediatric Oncologist's Transition to Survivorship Care..
+From Izurieta-Pacheco and colleagues.
+Published in Journal of clinical oncology : official journal of the American Society of Clinical Oncology in 2025.<break time="300ms"/>
+This essay explores the significant yet often overlooked challenges faced by cancer survivors. It reflects on the complex journey from pediatric oncology treatment into navigating life after therapy. The work highlights the critical need to better understand and support survivors dealing with long-term physical, psychological, and social issues. Recognizing these challenges is essential for developing comprehensive and effective survivorship care models.
+
+<break time="700ms"/><break time="500ms"/>That concludes this episode of OncoBrief. <break time="300ms"/> Thank you for listening. <break time="300ms"/> For more detailed information on these articles, please visit the OncoBrief website or check the original publications. <break time="300ms"/> Stay tuned for next week's update on the latest oncology research.</speak>

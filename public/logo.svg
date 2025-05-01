@@ -1,0 +1,17 @@
+<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Outer circle -->
+  <circle cx="60" cy="60" r="58" stroke="#4F46E5" stroke-width="4" fill="#EEF2FF" />
+  
+  <!-- Medical cross -->
+  <path d="M50 30V50H30V70H50V90H70V70H90V50H70V30H50Z" fill="#4F46E5" />
+  
+  <!-- DNA helix elements -->
+  <path d="M25 60C25 40 35 30 45 25" stroke="#A78BFA" stroke-width="3" stroke-linecap="round" />
+  <path d="M95 60C95 80 85 90 75 95" stroke="#A78BFA" stroke-width="3" stroke-linecap="round" />
+  <circle cx="45" cy="25" r="3" fill="#A78BFA" />
+  <circle cx="75" cy="95" r="3" fill="#A78BFA" />
+  
+  <!-- Research paper element -->
+  <rect x="32" y="32" width="56" height="56" rx="4" fill="white" opacity="0.3" />
+  <path d="M45 45H75M45 55H65M45 65H70" stroke="#4F46E5" stroke-width="2" stroke-linecap="round" />
+</svg> 

@@ -1,12 +1,48 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Header from '../components/Header';
 import { initializeStorage, getJournals, addJournal, removeJournal, addDigest, addArticles } from '../utils/localStorage';
 import { format, subDays } from 'date-fns';
 import Link from 'next/link';
 
+// Define journal tiers
+const JOURNAL_TIERS = {
+  tier1: {
+    name: 'Tier 1 - High Impact Clinical',
+    journals: [
+      'N Engl J Med',
+      'Lancet',
+      'J Clin Oncol',
+      'Lancet Oncol',
+      'JAMA Oncol'
+    ]
+  },
+  tier2: {
+    name: 'Tier 2 - High Impact Science',
+    journals: [
+      'Nature',
+      'Science',
+      'Cell',
+      'Nature Medicine',
+      'Cancer Cell'
+    ]
+  },
+  tier3: {
+    name: 'Tier 3 - Specialty Journals',
+    journals: [
+      'Cancer Discov',
+      'Blood',
+      'Ann Oncol',
+      'JAMA',
+      'BMJ'
+    ]
+  }
+};
+
 export default function AdminPage() {
+  const router = useRouter();
   const [journals, setJournals] = useState([]);
   const [newJournal, setNewJournal] = useState('');
   const [loading, setLoading] = useState(true);
@@ -16,11 +52,36 @@ export default function AdminPage() {
   const [useCustomDateRange, setUseCustomDateRange] = useState(false);
   const [startDate, setStartDate] = useState(format(subDays(new Date(), 7), 'yyyy-MM-dd'));
   const [endDate, setEndDate] = useState(format(new Date(), 'yyyy-MM-dd'));
-  const [showDashboardButton, setShowDashboardButton] = useState(false);
+  const [generatedDigestId, setGeneratedDigestId] = useState(null);
+  const [redirectCountdown, setRedirectCountdown] = useState(null);
+  
+  // Add state for journal selection method and selected tiers
+  const [journalSelectionMethod, setJournalSelectionMethod] = useState('manual'); // 'manual', 'tiers'
+  const [selectedTiers, setSelectedTiers] = useState({
+    tier1: true,
+    tier2: false,
+    tier3: false
+  });
 
   useEffect(() => {
     fetchJournals();
   }, []);
+
+  // Handle countdown timer and auto-redirect
+  useEffect(() => {
+    if (redirectCountdown !== null) {
+      if (redirectCountdown <= 0) {
+        router.push('/'); // Redirect to dashboard
+        return;
+      }
+      
+      const timer = setTimeout(() => {
+        setRedirectCountdown(redirectCountdown - 1);
+      }, 1000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [redirectCountdown, router]);
 
   const fetchJournals = () => {
     try {
@@ -38,128 +99,113 @@ export default function AdminPage() {
     }
   };
 
-  const handleAddJournal = (e) => {
-    e.preventDefault();
-    
+  const handleAddJournal = () => {
     if (!newJournal.trim()) {
-      setError('Please enter a journal name');
       return;
     }
     
     try {
-      setLoading(true);
-      
-      // Add the new journal to localStorage
       addJournal(newJournal.trim());
-      
-      // Clear the input and show success message
       setNewJournal('');
-      setSuccess('Journal added successfully');
-      
-      // Re-fetch the journals list
-      fetchJournals();
-      
-      // Clear success message after 3 seconds
-      setTimeout(() => {
-        setSuccess(null);
-      }, 3000);
+      fetchJournals(); // Refresh the list
+      setSuccess('Journal added successfully!');
+      setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
       console.error('Error adding journal:', err);
-      setError('Failed to add journal. Please try again.');
-    } finally {
-      setLoading(false);
+      setError(`Failed to add journal: ${err.message}`);
     }
   };
 
-  const handleRemoveJournal = (id) => {
-    if (!confirm('Are you sure you want to remove this journal?')) {
-      return;
-    }
-    
+  const handleRemoveJournal = (journalId) => {
     try {
-      setLoading(true);
-      
-      // Remove the journal from localStorage
-      removeJournal(id);
-      
-      // Show success message
-      setSuccess('Journal removed successfully');
-      
-      // Re-fetch the journals list
-      fetchJournals();
-      
-      // Clear success message after 3 seconds
-      setTimeout(() => {
-        setSuccess(null);
-      }, 3000);
+      removeJournal(journalId);
+      fetchJournals(); // Refresh the list
+      setSuccess('Journal removed successfully!');
+      setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
       console.error('Error removing journal:', err);
-      setError('Failed to remove journal. Please try again.');
-    } finally {
-      setLoading(false);
+      setError(`Failed to remove journal: ${err.message}`);
     }
+  };
+
+  // Handle tier checkbox change
+  const handleTierChange = (tierId) => {
+    setSelectedTiers({
+      ...selectedTiers,
+      [tierId]: !selectedTiers[tierId]
+    });
+  };
+
+  // Get journals from selected tiers
+  const getJournalsFromSelectedTiers = () => {
+    let selectedJournals = [];
+    
+    Object.keys(selectedTiers).forEach(tierId => {
+      if (selectedTiers[tierId] && JOURNAL_TIERS[tierId]) {
+        selectedJournals = [...selectedJournals, ...JOURNAL_TIERS[tierId].journals];
+      }
+    });
+    
+    return selectedJournals;
   };
 
   const triggerManualDigest = async () => {
-    if (!confirm('Are you sure you want to manually generate a digest? This may take a few minutes.')) {
-      return;
-    }
+    // Clear any existing states
+    setError(null);
+    setSuccess(null);
+    setRedirectCountdown(null);
+    setGeneratedDigestId(null);
     
-    try {
-      setProcessingDigest(true);
-      setError(null);
-      
-      // Get the current journals to send to the API
-      const currentJournals = getJournals();
-      
-      if (currentJournals.length === 0) {
-        setError('No journals configured. Please add at least one journal first.');
-        setProcessingDigest(false);
+    // Get journals based on selection method
+    let journalNames = [];
+    if (journalSelectionMethod === 'manual') {
+      // For manual selection, ensure we have at least one journal configured
+      if (journals.length === 0) {
+        setError('Please add at least one journal before generating a digest.');
         return;
       }
-
-      // Validate date range
+      journalNames = journals.map(journal => journal.name);
+    } else {
+      // For tier selection, ensure at least one tier is selected
+      if (!Object.values(selectedTiers).some(selected => selected)) {
+        setError('Please select at least one journal tier.');
+        return;
+      }
+      journalNames = getJournalsFromSelectedTiers();
+    }
+    
+    setProcessingDigest(true);
+    console.log('Generating digest with journals:', journalNames);
+    
+    try {
+      // Prepare date range
+      let dateRange = {};
       if (useCustomDateRange) {
-        if (!startDate || !endDate) {
-          setError('Please select both start and end dates.');
-          setProcessingDigest(false);
-          return;
-        }
-
-        const startObj = new Date(startDate);
-        const endObj = new Date(endDate);
-        
-        if (isNaN(startObj.getTime()) || isNaN(endObj.getTime())) {
-          setError('Invalid date format. Please use YYYY-MM-DD format.');
-          setProcessingDigest(false);
-          return;
-        }
-        
-        if (startObj > endObj) {
-          setError('Start date cannot be after end date.');
-          setProcessingDigest(false);
-          return;
-        }
+        dateRange = {
+          startDate,
+          endDate
+        };
       }
       
-      // Call the API route to generate a digest
+      // Make the API request to generate the digest
       const response = await fetch('/api/generateDigest', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ 
-          journals: currentJournals,
-          dateRange: useCustomDateRange ? {
-            startDate,
-            endDate
-          } : null 
+        body: JSON.stringify({
+          journals: journalNames,
+          dateRange
         }),
       });
       
+      if (!response.ok) {
+        throw new Error(`API request failed with status ${response.status}`);
+      }
+      
       const data = await response.json();
       
-      if (!response.ok || !data.success) {
+      if (!data.success) {
         throw new Error(data.error || 'Failed to generate digest');
       }
       
@@ -172,17 +218,13 @@ export default function AdminPage() {
         addArticles(data.articles);
         
         setSuccess(`Digest generated successfully with ${data.articles.length} articles!`);
-        setShowDashboardButton(true);
+        setGeneratedDigestId(data.digestId);
+        
+        // Start the countdown for auto-redirect
+        setRedirectCountdown(3);
       } else {
         setSuccess('Digest request completed, but no articles were found for the selected date range.');
-        setShowDashboardButton(false);
       }
-      
-      // Clear success message after more time when dashboard button is shown
-      setTimeout(() => {
-        setSuccess(null);
-        setShowDashboardButton(false);
-      }, showDashboardButton ? 10000 : 5000); // 10 seconds if dashboard button is shown, 5 seconds otherwise
     } catch (err) {
       console.error('Error triggering digest generation:', err);
       setError(`Failed to generate digest: ${err.message}`);
@@ -209,6 +251,68 @@ export default function AdminPage() {
               Click the button below to manually trigger the generation of a weekly digest. 
               This will fetch articles from the selected journals.
             </p>
+            
+            {/* Journal Selection Method */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Journal Selection Method
+              </label>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <div className="flex items-center">
+                  <input
+                    type="radio"
+                    id="manualSelection"
+                    name="journalSelectionMethod"
+                    checked={journalSelectionMethod === 'manual'}
+                    onChange={() => setJournalSelectionMethod('manual')}
+                    className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
+                  />
+                  <label htmlFor="manualSelection" className="ml-2 block text-sm text-gray-700">
+                    Manual selection (from your journal list)
+                  </label>
+                </div>
+                <div className="flex items-center">
+                  <input
+                    type="radio"
+                    id="tierSelection"
+                    name="journalSelectionMethod"
+                    checked={journalSelectionMethod === 'tiers'}
+                    onChange={() => setJournalSelectionMethod('tiers')}
+                    className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
+                  />
+                  <label htmlFor="tierSelection" className="ml-2 block text-sm text-gray-700">
+                    Predefined journal tiers
+                  </label>
+                </div>
+              </div>
+            </div>
+            
+            {/* Journal Tiers Selection */}
+            {journalSelectionMethod === 'tiers' && (
+              <div className="mb-6 bg-white p-4 rounded-md border border-gray-200">
+                <h4 className="font-medium text-gray-700 mb-3">Select Journal Tiers</h4>
+                
+                {Object.entries(JOURNAL_TIERS).map(([tierId, tier]) => (
+                  <div key={tierId} className="mb-4 last:mb-0">
+                    <div className="flex items-center mb-2">
+                      <input
+                        type="checkbox"
+                        id={`tier-${tierId}`}
+                        checked={selectedTiers[tierId]}
+                        onChange={() => handleTierChange(tierId)}
+                        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                      />
+                      <label htmlFor={`tier-${tierId}`} className="ml-2 block font-medium text-gray-700">
+                        {tier.name}
+                      </label>
+                    </div>
+                    <div className="ml-6 text-sm text-gray-500">
+                      {tier.journals.join(', ')}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
             
             {/* Date Range Selection */}
             <div className="mb-4">
@@ -270,100 +374,110 @@ export default function AdminPage() {
                   : 'bg-indigo-600 hover:bg-indigo-700'
               }`}
             >
-              {processingDigest ? 'Processing...' : 'Generate Digest Now'}
+              {processingDigest ? (
+                <span className="flex items-center">
+                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Processing...
+                </span>
+              ) : 'Generate Digest Now'}
             </button>
           </div>
           
-          {/* Journal Management */}
-          <div>
-            <h3 className="text-xl font-semibold text-gray-800 mb-4">
-              Journal Management
-            </h3>
-            
-            {error && (
-              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                <p>{error}</p>
+          {/* Journal Management - Only show if manual selection is active */}
+          {journalSelectionMethod === 'manual' && (
+            <div>
+              <h3 className="text-xl font-semibold text-gray-800 mb-4">
+                Journal Management
+              </h3>
+              
+              {error && (
+                <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded">
+                  <p className="font-medium">Error</p>
+                  <p>{error}</p>
+                </div>
+              )}
+              
+              {success && (
+                <div className="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4 rounded">
+                  <p className="font-medium">Success</p>
+                  <p>{success}</p>
+                  
+                  {redirectCountdown !== null && (
+                    <div className="mt-2 flex items-center">
+                      <p>Redirecting to dashboard in {redirectCountdown} seconds</p>
+                      <button 
+                        onClick={() => router.push('/')}
+                        className="ml-4 text-sm bg-green-500 hover:bg-green-600 text-white py-1 px-3 rounded transition-colors"
+                      >
+                        Go now
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+              
+              {/* Add New Journal Form */}
+              <div className="mb-6">
+                <label htmlFor="new-journal" className="block text-sm font-medium text-gray-700 mb-1">
+                  Add New Journal
+                </label>
+                <div className="mt-1 flex rounded-md shadow-sm">
+                  <input
+                    type="text"
+                    id="new-journal"
+                    value={newJournal}
+                    onChange={(e) => setNewJournal(e.target.value)}
+                    placeholder="e.g. 'J Clin Oncol' or 'Blood'"
+                    className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-l-md border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  />
+                  <button
+                    onClick={handleAddJournal}
+                    className="inline-flex items-center px-4 py-2 border border-l-0 border-gray-300 rounded-r-md bg-indigo-600 hover:bg-indigo-700 text-white font-medium"
+                  >
+                    Add
+                  </button>
+                </div>
+                <p className="mt-2 text-xs text-gray-500">
+                  Use the exact journal name as it appears in PubMed (e.g., "N Engl J Med", "Lancet", "J Clin Oncol")
+                </p>
               </div>
-            )}
-            
-            {success && (
-              <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-                <p>{success}</p>
+              
+              <div>
+                <h4 className="font-medium text-gray-700 mb-2">
+                  Current Journals
+                </h4>
                 
-                {showDashboardButton && (
-                  <div className="mt-3">
-                    <Link 
-                      href="/" 
-                      className="inline-flex items-center bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition-colors"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
-                      </svg>
-                      View on Dashboard
-                    </Link>
+                {loading ? (
+                  <div className="text-center py-4">
+                    <div className="spinner"></div>
+                    <p className="mt-2 text-gray-600">Loading journals...</p>
                   </div>
+                ) : journals.length === 0 ? (
+                  <p className="text-gray-500 italic">No journals configured. Add your first journal above.</p>
+                ) : (
+                  <ul className="divide-y divide-gray-200 border border-gray-200 rounded-md">
+                    {journals.map((journal) => (
+                      <li key={journal.id} className="py-3 px-4 flex justify-between items-center hover:bg-gray-50">
+                        <span className="text-gray-700">{journal.name}</span>
+                        <button
+                          onClick={() => handleRemoveJournal(journal.id)}
+                          className="text-red-600 hover:text-red-800 flex items-center"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                          Remove
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
                 )}
               </div>
-            )}
-            
-            {/* Add New Journal Form */}
-            <form onSubmit={handleAddJournal} className="mb-6">
-              <div className="flex">
-                <input
-                  type="text"
-                  value={newJournal}
-                  onChange={(e) => setNewJournal(e.target.value)}
-                  placeholder="Enter journal name (e.g., 'N Engl J Med')"
-                  className="flex-grow px-3 py-2 border border-gray-300 rounded-l-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                  disabled={loading}
-                />
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className={`px-4 py-2 rounded-r-md text-white font-medium ${
-                    loading
-                      ? 'bg-gray-400 cursor-not-allowed'
-                      : 'bg-indigo-600 hover:bg-indigo-700'
-                  }`}
-                >
-                  Add Journal
-                </button>
-              </div>
-              <p className="mt-2 text-sm text-gray-500">
-                Use the exact journal name as it appears in PubMed.
-              </p>
-            </form>
-            
-            {/* Journals List */}
-            <div>
-              <h4 className="font-medium text-gray-700 mb-2">
-                Current Journals
-              </h4>
-              
-              {loading ? (
-                <div className="text-center py-4">
-                  <div className="spinner"></div>
-                  <p className="mt-2 text-gray-600">Loading journals...</p>
-                </div>
-              ) : journals.length === 0 ? (
-                <p className="text-gray-500 italic">No journals configured. Add your first journal above.</p>
-              ) : (
-                <ul className="divide-y divide-gray-200">
-                  {journals.map((journal) => (
-                    <li key={journal.id} className="py-3 flex justify-between items-center">
-                      <span className="text-gray-700">{journal.name}</span>
-                      <button
-                        onClick={() => handleRemoveJournal(journal.id)}
-                        className="text-red-600 hover:text-red-800"
-                      >
-                        Remove
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              )}
             </div>
-          </div>
+          )}
         </div>
       </main>
     </div>

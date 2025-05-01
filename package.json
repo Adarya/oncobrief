@@ -11,6 +11,7 @@
   "dependencies": {
     "@aws-sdk/client-polly": "^3.797.0",
     "@google/generative-ai": "latest",
+    "@heroicons/react": "^2.2.0",
     "axios": "^1.6.2",
     "date-fns": "^2.30.0",
     "next": "^14.0.4",

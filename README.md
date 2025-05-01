@@ -6,7 +6,11 @@ OncoBrief is a web application that provides weekly summaries of new oncology re
 
 - **Weekly Digest**: View the most recent weekly digest of oncology publications.
 - **Article Summaries**: Each article includes a title, authors, citation, and an AI-generated summary.
+- **AI Classification**: Articles are automatically classified as "Clinical trial", "Translational", "Basic science", or "Other" using AI.
+- **Tiered View**: View articles grouped by clinical relevance (Tier 1: Clinical & Translational, Tier 2: Basic Science & Other).
 - **Journal Management**: Administrators can manage the list of target medical journals.
+- **Journal Tiers**: Pre-defined journal tiers (High Impact Clinical, High Impact Science, Specialty Journals) for easy selection.
+- **Advanced Filtering**: Filter articles by journal, year, and classification type.
 - **Manual Trigger**: Manually trigger the generation of a new digest.
 - **Email Delivery**: Send digests directly to your inbox.
 - **Podcast Generation**: Create AI-narrated audio summaries of research articles.
@@ -15,7 +19,7 @@ OncoBrief is a web application that provides weekly summaries of new oncology re
 
 - **Frontend**: Next.js with Tailwind CSS
 - **Data Storage**: Browser localStorage instead of a database
-- **APIs**: PubMed E-utilities API for research data, Gemini API for AI summaries, AWS Polly for text-to-speech
+- **APIs**: PubMed E-utilities API for research data, Gemini API for AI summaries and classification, AWS Polly for text-to-speech
 
 ## Getting Started
 
@@ -100,10 +104,24 @@ To send emails through Gmail, you need to:
 
 1. Open the application in your browser at http://localhost:3000
 2. Navigate to the Admin page
-3. Add journals you want to monitor (e.g., "N Engl J Med", "Lancet", "J Clin Oncol")
+3. Add journals you want to monitor or select predefined journal tiers:
+   - **Tier 1**: High Impact Clinical (NEJM, Lancet, JCO, etc.)
+   - **Tier 2**: High Impact Science (Nature, Science, Cell, etc.)
+   - **Tier 3**: Specialty Journals (Cancer Discovery, Blood, etc.)
 4. Click the "Generate Digest Now" button to create your first digest
 5. Once the digest is generated, go back to the Dashboard to view the articles
-6. Optionally generate a podcast or email the digest to yourself
+6. Use the "View Mode" toggle to switch between "All Articles" and "By Classification" views
+7. Optionally generate a podcast or email the digest to yourself
+
+## Recent Updates
+
+- **AI Classification**: Articles are now automatically classified by the Gemini API
+- **Report Classification Tiers**: Articles can be viewed in tiers based on their clinical relevance
+- **Journal Tiers**: Predefined journal groups for easier selection
+- **Enhanced Filtering**: Filter by article type (Clinical trial, Translational, etc.)
+- **Improved API Reliability**: Added retry mechanisms with exponential backoff
+- **Processing Capacity**: Increased from 15 to 50 papers per digest
+- **UI Enhancements**: Improved layout and responsiveness
 
 ## Data Storage
 
@@ -116,7 +134,7 @@ All data is stored in your browser's localStorage, which means:
 
 The application uses these external APIs:
 1. **PubMed E-utilities API**: To search and fetch oncology research papers
-2. **Gemini API**: To generate AI summaries of article abstracts
+2. **Gemini API**: To generate AI summaries and classifications of article abstracts
 3. **AWS Polly**: For text-to-speech podcast generation
 
 ## Security Notes

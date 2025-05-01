@@ -8,6 +8,7 @@ export default function PodcastPlayer({ audioUrl, scriptUrl, digestTitle }) {
   const [duration, setDuration] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [volume, setVolume] = useState(1);
   
   const audioRef = useRef(null);
   
@@ -43,11 +44,16 @@ export default function PodcastPlayer({ audioUrl, scriptUrl, digestTitle }) {
         console.error('Audio error:', e);
       };
       
+      const handlePlay = () => setIsPlaying(true);
+      const handlePause = () => setIsPlaying(false);
+      
       // Add event listeners
       audio.addEventListener('loadeddata', setAudioData);
       audio.addEventListener('timeupdate', setAudioTime);
       audio.addEventListener('ended', handleAudioEnd);
       audio.addEventListener('error', handleError);
+      audio.addEventListener('play', handlePlay);
+      audio.addEventListener('pause', handlePause);
       
       // If audio is already loaded, set the duration
       if (audio.readyState >= 2) {
@@ -60,6 +66,8 @@ export default function PodcastPlayer({ audioUrl, scriptUrl, digestTitle }) {
         audio.removeEventListener('timeupdate', setAudioTime);
         audio.removeEventListener('ended', handleAudioEnd);
         audio.removeEventListener('error', handleError);
+        audio.removeEventListener('play', handlePlay);
+        audio.removeEventListener('pause', handlePause);
       };
     }
     
@@ -98,6 +106,14 @@ export default function PodcastPlayer({ audioUrl, scriptUrl, digestTitle }) {
     setCurrentTime(seekTime);
   };
   
+  const handleVolumeChange = (e) => {
+    if (!audioRef.current) return;
+    
+    const newVolume = parseFloat(e.target.value);
+    audioRef.current.volume = newVolume;
+    setVolume(newVolume);
+  };
+  
   if (!audioUrl) {
     return (
       <div className="bg-indigo-50 border border-indigo-200 text-indigo-700 px-4 py-3 rounded mb-6">
@@ -107,16 +123,16 @@ export default function PodcastPlayer({ audioUrl, scriptUrl, digestTitle }) {
   }
   
   return (
-    <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4 mb-6">
-      <h3 className="text-lg font-semibold text-indigo-900 mb-3 flex items-center">
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+    <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg p-4 border border-indigo-100">
+      <h3 className="text-lg font-semibold text-indigo-900 mb-4 flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15.536a5 5 0 017.072 0m-9.9-2.828a9 9 0 0112.728 0" />
         </svg>
         OncoBrief Podcast: {digestTitle || 'Weekly Digest'}
       </h3>
       
       {/* Add the audio element first, so it's available when the component renders */}
-      <audio ref={audioRef} src={audioUrl} preload="metadata" />
+      <audio ref={audioRef} src={audioUrl} preload="metadata" className="hidden" />
       
       {loading ? (
         <div className="flex items-center justify-center h-16">
@@ -133,7 +149,8 @@ export default function PodcastPlayer({ audioUrl, scriptUrl, digestTitle }) {
           <div className="flex items-center mb-3">
             <button 
               onClick={togglePlay}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-full h-10 w-10 flex items-center justify-center mr-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-10 h-10 flex items-center justify-center bg-indigo-600 text-white rounded-full hover:bg-indigo-700 focus:outline-none mr-4"
+              aria-label={isPlaying ? 'Pause' : 'Play'}
             >
               {isPlaying ? (
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -153,17 +170,38 @@ export default function PodcastPlayer({ audioUrl, scriptUrl, digestTitle }) {
                 max={duration || 0}
                 value={currentTime}
                 onChange={handleSeek}
-                className="w-full h-2 bg-indigo-200 rounded-lg appearance-none cursor-pointer"
+                className="w-full h-2 rounded-lg appearance-none bg-indigo-200 cursor-pointer"
+                style={{
+                  background: `linear-gradient(to right, #6366f1 0%, #6366f1 ${(currentTime / (duration || 1)) * 100}%, #e0e7ff ${(currentTime / (duration || 1)) * 100}%, #e0e7ff 100%)`
+                }}
               />
+              <div className="flex justify-between text-xs text-indigo-800 mt-1">
+                <span>{formatTime(currentTime)}</span>
+                <span>{formatTime(duration)}</span>
+              </div>
             </div>
             
-            <div className="text-sm text-indigo-700 font-mono whitespace-nowrap ml-2">
-              {formatTime(currentTime)} / {formatTime(duration)}
+            <div className="relative ml-4 flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-indigo-600" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.707-3.707a1 1 0 011.09-.217zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.984 5.984 0 01-1.757 4.243 1 1 0 01-1.415-1.415A3.984 3.984 0 0013 10a3.983 3.983 0 00-1.172-2.828 1 1 0 010-1.415z" clipRule="evenodd" />
+              </svg>
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.01"
+                value={volume}
+                onChange={handleVolumeChange}
+                className="w-16 h-1 ml-2 rounded-lg appearance-none bg-indigo-200 cursor-pointer"
+                style={{
+                  background: `linear-gradient(to right, #6366f1 0%, #6366f1 ${volume * 100}%, #e0e7ff ${volume * 100}%, #e0e7ff 100%)`
+                }}
+              />
             </div>
           </div>
           
           {/* Download buttons */}
-          <div className="flex justify-end space-x-4">
+          <div className="flex justify-end space-x-4 mt-4">
             {scriptUrl && (
               <a
                 href={scriptUrl}
