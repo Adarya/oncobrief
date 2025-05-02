@@ -533,12 +533,14 @@ export default function TopicExplorer() {
               
               <div 
                 ref={timelineContainerRef} 
-                className="relative h-96 overflow-x-hidden border-t border-b border-gray-200 my-4"
+                className="relative h-[400px] overflow-x-auto border border-gray-100 rounded-xl bg-gradient-to-b from-white to-gray-50 my-6 px-8"
               >
-                {/* Timeline Line */}
-                <div className="absolute left-0 right-0 top-1/2 h-0.5 bg-gray-300"></div>
+                {/* Horizontal guidelines */}
+                <div className="absolute left-0 right-0 top-1/4 h-px bg-gray-100 z-0"></div>
+                <div className="absolute left-0 right-0 top-2/4 h-px bg-gray-200 z-0"></div>
+                <div className="absolute left-0 right-0 top-3/4 h-px bg-gray-100 z-0"></div>
                 
-                {/* Date markers first */}
+                {/* Timeline content */}
                 {(() => {
                   // Find earliest and latest dates
                   const dates = searchResults.articles
@@ -553,129 +555,210 @@ export default function TopicExplorer() {
                   const articlesByDate = groupArticlesByDate(searchResults.articles);
                   const dateKeys = Object.keys(articlesByDate).sort();
                   
-                  // Render each date marker
-                  return dateKeys.map((dateKey, index) => {
-                    const articles = articlesByDate[dateKey];
-                    const position = calculateTimelinePosition(
-                      `${dateKey}-15`, // use middle of month for positioning
-                      earliestDate,
-                      latestDate
-                    );
-                    
-                    // Format date as "Mon YYYY"
-                    const formattedDate = format(parseISO(`${dateKey}-15`), 'MMM yyyy');
-                    
-                    return (
-                      <div
-                        key={dateKey}
-                        className="absolute z-20"
-                        style={{
-                          left: `${position}%`,
-                          top: '50%',
-                          transform: 'translate(-50%, -50%)'
-                        }}
-                      >
-                        {/* Date marker line */}
-                        <div className="h-10 w-0.5 bg-gray-400"></div>
-                        
-                        {/* Date label */}
-                        <div className="absolute top-12 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
-                          <span className="bg-indigo-100 text-indigo-800 text-xs font-medium px-2 py-1 rounded-md">
-                            {formattedDate}
-                            <span className="ml-1 text-xs text-indigo-600">({articles.length})</span>
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  });
-                })()}
-                
-                {/* Article points */}
-                {searchResults.articles.map((article, index) => {
-                  // Find earliest and latest dates
-                  const dates = searchResults.articles
-                    .map(a => a.pubDate)
-                    .filter(Boolean)
-                    .sort();
-                  
-                  const earliestDate = dates[0];
-                  const latestDate = dates[dates.length - 1];
-                  
-                  // Calculate horizontal position based on publication date
-                  const position = calculateTimelinePosition(article.pubDate, earliestDate, latestDate);
-                  
-                  // Calculate vertical positions with more spacing
-                  // Alternate above and below the timeline, but with more spacing
-                  const verticalPosition = index % 2 === 0 
-                    ? 30 - (Math.floor(index / 10) * 5) 
-                    : 70 + (Math.floor(index / 10) * 5);
+                  // Calculate min width to ensure spacing (at least 120px per month)
+                  const minWidth = Math.max(800, dateKeys.length * 120);
                   
                   return (
                     <div 
-                      key={article.pmid}
-                      className={`absolute cursor-pointer transition-all duration-200 ${selectedArticle?.pmid === article.pmid ? 'z-30' : 'z-10'}`}
-                      style={{ 
-                        left: `${position}%`, 
-                        top: `${verticalPosition}%`,
-                        transform: 'translate(-50%, -50%)'
-                      }}
-                      onClick={() => setSelectedArticle(selectedArticle?.pmid === article.pmid ? null : article)}
+                      className="absolute top-0 left-0 right-0 bottom-0 z-10"
+                      style={{ minWidth: `${minWidth}px` }}
                     >
-                      {/* Dot */}
-                      <div 
-                        className={`h-4 w-4 rounded-full border-2 ${selectedArticle?.pmid === article.pmid 
-                          ? 'border-indigo-600 bg-indigo-200 ring-4 ring-indigo-100' 
-                          : 'border-gray-400 bg-white hover:border-indigo-400 hover:bg-indigo-50'}`}
-                      ></div>
+                      {/* Timeline Line */}
+                      <div className="absolute left-4 right-4 top-1/2 h-1.5 bg-indigo-100 rounded-full"></div>
                       
-                      {/* Article Detail Popup */}
-                      {selectedArticle?.pmid === article.pmid && (
-                        <div 
-                          className={`absolute ${
-                            verticalPosition < 50 ? 'bottom-full mb-3' : 'top-full mt-3'
-                          } left-1/2 transform -translate-x-1/2 w-72 bg-white border border-gray-200 rounded-lg shadow-lg p-4 z-40`}
-                        >
-                          <div className="text-xs font-semibold text-gray-500 mb-1">
-                            {article.journal} · {formatDate(article.pubDate)}
-                          </div>
-                          <h4 className="text-sm font-medium text-gray-800 mb-2">{article.title}</h4>
-                          <div className="text-xs text-gray-600 line-clamp-3 mb-2">
-                            {article.abstract.substring(0, 150)}...
-                          </div>
-                          <a 
-                            href={`https://pubmed.ncbi.nlm.nih.gov/${article.pmid}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-xs text-indigo-600 hover:text-indigo-800 font-medium"
+                      {/* Month markers */}
+                      {dateKeys.map((dateKey, index) => {
+                        const articles = articlesByDate[dateKey];
+                        const position = calculateTimelinePosition(
+                          `${dateKey}-15`, // use middle of month for positioning
+                          earliestDate,
+                          latestDate
+                        );
+                        
+                        // Format date as "Mon YYYY"
+                        const formattedDate = format(parseISO(`${dateKey}-15`), 'MMM yyyy');
+                        
+                        return (
+                          <div
+                            key={dateKey}
+                            className="absolute z-20"
+                            style={{
+                              left: `${position}%`,
+                              top: '50%',
+                              transform: 'translate(-50%, -50%)'
+                            }}
                           >
-                            View on PubMed →
-                          </a>
-                        </div>
-                      )}
+                            {/* Month marker */}
+                            <div className="h-4 w-4 rounded-full bg-indigo-500 ring-4 ring-indigo-100"></div>
+                            
+                            {/* Month label */}
+                            <div className="absolute top-10 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
+                              <span className="bg-indigo-500 text-white text-xs font-medium px-2.5 py-1.5 rounded-md shadow-sm">
+                                {formattedDate}
+                                <span className="ml-1 inline-flex items-center justify-center h-5 w-5 rounded-full bg-white text-indigo-700 text-xs font-semibold">
+                                  {articles.length}
+                                </span>
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                      
+                      {/* Article points */}
+                      {searchResults.articles.map((article, index) => {
+                        const position = calculateTimelinePosition(
+                          article.pubDate, 
+                          earliestDate,
+                          latestDate
+                        );
+                        
+                        // Apply natural clustering based on publication date
+                        // This distributes points in a more organic way
+                        const pubDateObj = new Date(article.pubDate);
+                        const dayOfMonth = pubDateObj.getDate();
+                        const offset = (dayOfMonth % 20) * 0.5;
+                        
+                        // Distribute vertically based on day of month and article index
+                        // This creates a more organic look while preventing overlaps
+                        const basePos = index % 2 === 0 ? 32 : 68;
+                        const jitter = Math.sin(index * 0.5) * 8; 
+                        const verticalPosition = basePos + offset + jitter;
+                        
+                        // Calculate if popup should be positioned above or below
+                        const popupPosition = verticalPosition < 50 ? 'bottom' : 'top';
+                        
+                        // For articles published on exactly the same date, add horizontal offset
+                        const sameArticles = searchResults.articles.filter(a => 
+                          a.pubDate === article.pubDate && a.pmid !== article.pmid
+                        );
+                        const horizontalOffset = sameArticles.length > 0 
+                          ? (index % sameArticles.length - sameArticles.length/2) * 1.5
+                          : 0;
+                        
+                        return (
+                          <div 
+                            key={article.pmid}
+                            className={`absolute cursor-pointer transition-all duration-200 ${selectedArticle?.pmid === article.pmid ? 'z-50' : 'z-10'}`}
+                            style={{ 
+                              left: `calc(${position}% + ${horizontalOffset}px)`, 
+                              top: `${verticalPosition}%`,
+                              transform: 'translate(-50%, -50%)'
+                            }}
+                            onClick={() => setSelectedArticle(selectedArticle?.pmid === article.pmid ? null : article)}
+                          >
+                            {/* Article dot */}
+                            <div 
+                              className={`group transition-all duration-150
+                                ${selectedArticle?.pmid === article.pmid 
+                                  ? 'h-6 w-6 border-indigo-600 bg-indigo-200 ring-4 ring-indigo-100 scale-110' 
+                                  : 'h-3.5 w-3.5 border-gray-400 bg-white hover:border-indigo-400 hover:bg-indigo-50 hover:scale-125'
+                                } rounded-full border-2`}
+                            >
+                              {/* Hover tooltip */}
+                              {!selectedArticle && (
+                                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-40 pointer-events-none">
+                                  <div className="bg-gray-900 text-white text-xs rounded py-1 px-2 whitespace-nowrap max-w-[180px] truncate shadow-lg">
+                                    {article.title}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                            
+                            {/* Article Detail Popup */}
+                            {selectedArticle?.pmid === article.pmid && (
+                              <div 
+                                className={`fixed transform -translate-x-1/2 z-50 w-80 bg-white border border-gray-200 rounded-lg shadow-2xl`}
+                                style={{
+                                  // Position the popup to avoid being cut off by container boundaries
+                                  left: `${position}%`,
+                                  // Adjust vertical position based on whether it should be above or below
+                                  top: popupPosition === 'bottom' ? '60%' : '20%',
+                                  maxHeight: '300px',
+                                  overflowY: 'auto'
+                                }}
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <div className="sticky top-0 z-10 bg-white border-b border-gray-100 p-3 rounded-t-lg flex justify-between items-center">
+                                  <span className="px-2.5 py-1 bg-indigo-100 text-indigo-800 text-xs font-semibold rounded">
+                                    {formatDate(article.pubDate)}
+                                  </span>
+                                  <button 
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setSelectedArticle(null);
+                                    }}
+                                    className="text-gray-400 hover:text-gray-600 ml-2"
+                                    aria-label="Close"
+                                  >
+                                    <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                      <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                                    </svg>
+                                  </button>
+                                </div>
+                                <div className="p-4 pt-2">
+                                  <div className="text-xs font-semibold text-indigo-600 mb-1 truncate">
+                                    {article.journal}
+                                  </div>
+                                  <h4 className="text-sm font-medium text-gray-800 mb-2">{article.title}</h4>
+                                  <div className="text-xs text-gray-600 mb-3 max-h-36 overflow-y-auto pr-1">
+                                    {article.abstract}
+                                  </div>
+                                  <div className="flex justify-between items-center pt-2 border-t border-gray-100">
+                                    <span className="text-xs text-gray-500">{article.authors.split(';')[0]}{article.authors.includes(';') ? ' et al.' : ''}</span>
+                                    <a 
+                                      href={`https://pubmed.ncbi.nlm.nih.gov/${article.pmid}`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-xs flex items-center gap-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 px-2 py-1 rounded font-medium"
+                                      onClick={(e) => e.stopPropagation()}
+                                    >
+                                      View on PubMed
+                                      <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+                                        <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+                                      </svg>
+                                    </a>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
                     </div>
                   );
-                })}
+                })()}
               </div>
               
-              <div className="flex justify-between text-xs text-gray-500 mt-4">
+              <div className="flex justify-between text-xs text-gray-500 mt-2 px-6">
                 <span className="font-medium">
-                  {searchResults.articles.reduce((earliest, article) => {
+                  {formatDate(searchResults.articles.reduce((earliest, article) => {
                     if (!article.pubDate) return earliest;
                     return !earliest || article.pubDate < earliest ? article.pubDate : earliest;
-                  }, null) ? formatDate(searchResults.articles.reduce((earliest, article) => {
-                    if (!article.pubDate) return earliest;
-                    return !earliest || article.pubDate < earliest ? article.pubDate : earliest;
-                  }, null)) : 'Unknown date'}
+                  }, null))}
                 </span>
                 <span className="font-medium">
-                  {searchResults.articles.reduce((latest, article) => {
+                  {formatDate(searchResults.articles.reduce((latest, article) => {
                     if (!article.pubDate) return latest;
                     return !latest || article.pubDate > latest ? article.pubDate : latest;
-                  }, null) ? formatDate(searchResults.articles.reduce((latest, article) => {
-                    if (!article.pubDate) return latest;
-                    return !latest || article.pubDate > latest ? article.pubDate : latest;
-                  }, null)) : 'Unknown date'}
+                  }, null))}
                 </span>
+              </div>
+              
+              {/* Timeline legend/help */}
+              <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-center gap-6 text-xs text-gray-500">
+                <div className="flex items-center gap-2">
+                  <div className="h-4 w-4 rounded-full bg-indigo-500 ring-2 ring-indigo-100"></div>
+                  <span>Month marker</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="h-3.5 w-3.5 rounded-full border-2 border-gray-400 bg-white"></div>
+                  <span>Publication</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="h-5 w-5 rounded-full border-2 border-indigo-600 bg-indigo-200 ring-2 ring-indigo-100"></div>
+                  <span>Selected publication</span>
+                </div>
               </div>
             </div>
             
