@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import axios from 'axios';
+import { format } from 'date-fns';
 
 // PubMed API settings
 const BASE_URL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/";
@@ -33,9 +34,34 @@ function cleanXmlText(text) {
 }
 
 // Function to search PubMed for articles based on topic
-async function searchPubMedByTopic(topic, additionalKeywords, journals, timeRange, maxResults = 100) {
+async function searchPubMedByTopic(topic, additionalKeywords, journals, timeRange, maxResults = 100, fallbackToAllJournals = false) {
   console.log(`Searching PubMed for topic: '${topic}' with additional keywords: ${additionalKeywords.join(', ')}`);
   
+  // Perform initial search with journals if provided
+  const results = await attemptPubMedSearch(topic, additionalKeywords, journals, timeRange, maxResults);
+  
+  // Only perform fallback if explicitly requested via parameter
+  // This allows the caller to control whether to fallback or not
+  if (results.pmids.length === 0 && fallbackToAllJournals && journals && journals.length > 0) {
+    console.log("No results found with journal filter. Trying search without journal restrictions...");
+    const widerResults = await attemptPubMedSearch(topic, additionalKeywords, [], timeRange, maxResults);
+    
+    // Return both the results and a flag indicating we removed the journal filter
+    return {
+      ...widerResults,
+      journalFilterRemoved: true
+    };
+  }
+  
+  // Return results with a flag indicating we used the journal filter as requested
+  return {
+    ...results,
+    journalFilterRemoved: false
+  };
+}
+
+// Helper function to perform PubMed search with given parameters
+async function attemptPubMedSearch(topic, additionalKeywords, journals, timeRange, maxResults = 100) {
   // Prepare search terms
   let searchTerms = `${topic}[Title/Abstract]`;
   
@@ -51,8 +77,11 @@ async function searchPubMedByTopic(topic, additionalKeywords, journals, timeRang
     }
   }
   
+  // Track if we're using a journal filter
+  const usingJournalFilter = journals && journals.length > 0;
+  
   // Add journal filter if provided
-  if (journals && journals.length > 0) {
+  if (usingJournalFilter) {
     const journalTerms = journals
       .filter(j => j.trim() !== '')
       .map(j => `"${j.trim()}"[Journal]`)
@@ -69,21 +98,37 @@ async function searchPubMedByTopic(topic, additionalKeywords, journals, timeRang
     
     if (timeRange.type === 'relative') {
       // For relative time ranges like "last 6 months"
-      const relativeDate = new Date();
-      relativeDate.setMonth(relativeDate.getMonth() - timeRange.months);
-      const fromDate = relativeDate.toISOString().split('T')[0];
-      const toDate = new Date().toISOString().split('T')[0];
+      const toDate = new Date();
+      const fromDate = new Date();
+      fromDate.setMonth(fromDate.getMonth() - timeRange.months);
       
-      dateFilter = `${fromDate}:${toDate}[Date - Publication]`;
-    } else if (timeRange.start && timeRange.end) {
-      // For absolute date ranges
-      dateFilter = `${timeRange.start}:${timeRange.end}[Date - Publication]`;
+      // Format dates as YYYY/MM/DD for PubMed
+      const fromDateStr = fromDate.toISOString().split('T')[0].replace(/-/g, '/');
+      const toDateStr = toDate.toISOString().split('T')[0].replace(/-/g, '/');
+      
+      dateFilter = `${fromDateStr}:${toDateStr}[Date - Publication]`;
+    } else if (timeRange.type === 'absolute') {
+      // For absolute date ranges, convert format from YYYY-MM-DD to YYYY/MM/DD
+      // Also ensure we're not using future dates
+      const today = new Date();
+      const endDate = new Date(timeRange.end);
+      
+      // Use the earlier of the two - requested end date or today
+      const actualEndDate = endDate > today ? today : endDate;
+      
+      const fromDateStr = timeRange.start.replace(/-/g, '/');
+      const toDateStr = format(actualEndDate, 'yyyy/MM/dd');
+      
+      dateFilter = `${fromDateStr}:${toDateStr}[Date - Publication]`;
     }
     
     if (dateFilter) {
       searchTerms = `${searchTerms} AND ${dateFilter}`;
     }
   }
+  
+  // Log the constructed query
+  console.log(`PubMed search query: ${searchTerms}`);
   
   const searchUrl = `${BASE_URL}esearch.fcgi`;
   const params = {
@@ -96,7 +141,6 @@ async function searchPubMedByTopic(topic, additionalKeywords, journals, timeRang
   };
   
   try {
-    console.log(`PubMed search query: ${searchTerms}`);
     const response = await axios.get(searchUrl, { params });
     
     // Parse the XML response
@@ -112,7 +156,7 @@ async function searchPubMedByTopic(topic, additionalKeywords, journals, timeRang
     
     if (!idListMatch) {
       console.log('No IdList found in response');
-      return { pmids: [], totalResults };
+      return { pmids: [], totalResults, journalFilterRemoved: false };
     }
     
     const idList = idListMatch[1];
@@ -129,10 +173,18 @@ async function searchPubMedByTopic(topic, additionalKeywords, journals, timeRang
     
     await delay(REQUEST_DELAY_MS);
     
-    return { pmids, totalResults };
+    return { 
+      pmids, 
+      totalResults,
+      journalFilterRemoved: false // This function itself doesn't remove journal filters
+    };
   } catch (error) {
     console.error('Error searching PubMed:', error);
-    return { pmids: [], totalResults: 0 };
+    return { 
+      pmids: [], 
+      totalResults: 0,
+      journalFilterRemoved: false 
+    };
   }
 }
 
@@ -287,8 +339,29 @@ async function generateMetaAnalysisSummary(articles, topic, additionalKeywords, 
   let retryCount = 0;
   let lastError = null;
   
+  // Check if we have enough articles with actual content to analyze
+  const articlesWithContent = articles.filter(article => 
+    article.abstract && 
+    article.abstract.length > 50 &&
+    article.abstract !== "No abstract available."
+  );
+  
+  if (articlesWithContent.length < 3) {
+    console.log(`Not enough articles with content to analyze: ${articlesWithContent.length} of ${articles.length}`);
+    return { 
+      fullText: `Insufficient content for analysis: ${articlesWithContent.length} of ${articles.length} articles have usable abstracts.`,
+      sections: {
+        overview: `This is a collection of ${articles.length} research papers about ${topic}, but only ${articlesWithContent.length} have sufficient content for analysis.`,
+        keyFindings: "Unable to generate key findings summary due to insufficient content.",
+        researchTrends: "Unable to analyze research trends due to insufficient content.",
+        clinicalImplications: "Unable to determine clinical implications due to insufficient content.",
+        futureDirections: "Unable to suggest future directions due to insufficient content."
+      }
+    };
+  }
+  
   // Extract and combine all abstracts
-  const combinedAbstracts = articles.map(a => {
+  const combinedAbstracts = articlesWithContent.map(a => {
     return `TITLE: ${a.title}\nJOURNAL: ${a.journal}\nABSTRACT: ${a.abstract}\n---`;
   }).join('\n\n');
   
@@ -297,7 +370,7 @@ async function generateMetaAnalysisSummary(articles, topic, additionalKeywords, 
   if (timeRange) {
     if (timeRange.type === 'relative') {
       timeRangeText = `the last ${timeRange.months} months`;
-    } else if (timeRange.start && timeRange.end) {
+    } else if (timeRange.type === 'absolute' && timeRange.start && timeRange.end) {
       timeRangeText = `the period from ${timeRange.start} to ${timeRange.end}`;
     }
   }
@@ -340,7 +413,7 @@ Here are the research abstracts:
 
 ${combinedAbstracts}
 
-Provide a scholarly, objective analysis suitable for medical professionals.`
+Important: Provide a scholarly, objective analysis suitable for medical professionals. If you cannot generate a comprehensive summary due to limited information, please state so clearly in each section.`
               }
             ]
           }
@@ -373,6 +446,12 @@ Provide a scholarly, objective analysis suitable for medical professionals.`
         
         const summaryText = response.data.candidates[0].content.parts[0].text.trim();
         
+        // Check if we got a meaningful response
+        if (!summaryText || summaryText.length < 50) {
+          console.log(`Empty or very short summary returned: "${summaryText}"`);
+          throw new Error("Empty or insufficient summary generated");
+        }
+        
         // Parse sections from the response
         const sections = {
           overview: extractSection(summaryText, 'OVERVIEW'),
@@ -388,6 +467,7 @@ Provide a scholarly, objective analysis suitable for medical professionals.`
           sections
         };
       } else {
+        console.error("Unexpected response structure from Gemini API:", JSON.stringify(response.data));
         throw new Error("Unexpected response structure from Gemini API");
       }
     } catch (error) {
@@ -420,9 +500,26 @@ Provide a scholarly, objective analysis suitable for medical professionals.`
 
 // Helper function to extract a section from the summary
 function extractSection(text, sectionName) {
-  const regex = new RegExp(`${sectionName}:\\s*(.*?)(?=\\n\\d+\\.\\s+[A-Z]|$)`, 's');
-  const match = text.match(regex);
-  return match ? match[1].trim() : `No ${sectionName.toLowerCase()} section found.`;
+  try {
+    const regex = new RegExp(`${sectionName}:\\s*(.*?)(?=\\n\\d+\\.\\s+[A-Z]|$)`, 's');
+    const match = text.match(regex);
+    
+    if (match && match[1] && match[1].trim().length > 5) {
+      return match[1].trim();
+    } else {
+      const fallbackRegex = new RegExp(`${sectionName}[:\\s]+(.*?)(?=\\n[A-Z\\d]|$)`, 's');
+      const fallbackMatch = text.match(fallbackRegex);
+      
+      if (fallbackMatch && fallbackMatch[1] && fallbackMatch[1].trim().length > 5) {
+        return fallbackMatch[1].trim();
+      }
+    }
+    
+    return `No ${sectionName.toLowerCase()} section found.`;
+  } catch (error) {
+    console.error(`Error extracting ${sectionName} section:`, error);
+    return `Error extracting ${sectionName.toLowerCase()} section.`;
+  }
 }
 
 // Main API handler
@@ -435,7 +532,8 @@ export async function POST(request) {
       topic = 'APOBEC',
       additionalKeywords = [],
       journals = [],
-      timeRange = { type: 'relative', months: 6 }
+      timeRange = { type: 'relative', months: 6 },
+      fallbackToAllJournals = true
     } = body;
     
     console.log(`Topic search API called with topic: ${topic}, keywords: ${additionalKeywords.join(', ')}`);
@@ -445,17 +543,19 @@ export async function POST(request) {
       return NextResponse.json({ success: false, error: 'Topic is required' }, { status: 400 });
     }
     
-    // Search PubMed for articles matching the topic
-    const { pmids, totalResults } = await searchPubMedByTopic(
+    // Search PubMed for articles matching the topic with selected journals
+    const results = await searchPubMedByTopic(
       topic, 
       additionalKeywords, 
       journals, 
       timeRange,
-      50 // Get up to 50 results for a comprehensive analysis
+      50, // Get up to 50 results for a comprehensive analysis
+      fallbackToAllJournals
     );
     
-    console.log(`Found ${pmids.length} articles matching the search criteria (${totalResults} total)`);
+    const { pmids, totalResults, journalFilterRemoved } = results;
     
+    // If no results, return an error
     if (pmids.length === 0) {
       return NextResponse.json({
         success: false,
@@ -464,6 +564,8 @@ export async function POST(request) {
         totalResults
       });
     }
+    
+    console.log(`Found ${pmids.length} articles matching the search criteria (${totalResults} total)`);
     
     // Fetch details for the found PMIDs
     const articles = await fetchPubMedDetails(pmids);
@@ -488,7 +590,7 @@ export async function POST(request) {
     const searchRecord = {
       topic,
       additionalKeywords,
-      journals,
+      journals: journalFilterRemoved ? [] : journals, // Reflect actual journals used
       timeRange,
       resultCount: articles.length,
       totalResults,
@@ -510,7 +612,8 @@ export async function POST(request) {
       searchParams: searchRecord,
       articles,
       summary,
-      totalResults
+      totalResults,
+      journalFilterRemoved
     });
     
   } catch (error) {
