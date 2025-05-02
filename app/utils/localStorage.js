@@ -31,6 +31,16 @@ const initializeStorage = () => {
   if (!localStorage.getItem('podcasts')) {
     localStorage.setItem('podcasts', JSON.stringify([]));
   }
+  
+  // Initialize topic searches if not exist
+  if (!localStorage.getItem('topicSearches')) {
+    localStorage.setItem('topicSearches', JSON.stringify([]));
+  }
+  
+  // Initialize topic summaries if not exist
+  if (!localStorage.getItem('topicSummaries')) {
+    localStorage.setItem('topicSummaries', JSON.stringify([]));
+  }
 };
 
 // Get all journals
@@ -214,6 +224,79 @@ const savePodcast = (podcast) => {
   return existingIndex >= 0 ? podcasts[existingIndex] : podcasts[podcasts.length - 1];
 };
 
+// Topic Search related functions
+
+// Get all topic searches
+const getTopicSearches = () => {
+  if (typeof window === 'undefined') return [];
+  initializeStorage();
+  return JSON.parse(localStorage.getItem('topicSearches'));
+};
+
+// Get a topic search by ID
+const getTopicSearchById = (searchId) => {
+  if (typeof window === 'undefined') return null;
+  
+  const searches = getTopicSearches();
+  return searches.find(search => search.id === searchId) || null;
+};
+
+// Save a new topic search
+const saveTopicSearch = (searchParams) => {
+  if (typeof window === 'undefined') return null;
+  
+  const searches = getTopicSearches();
+  const newSearch = {
+    id: Date.now().toString(),
+    ...searchParams,
+    createdAt: new Date().toISOString()
+  };
+  
+  searches.push(newSearch);
+  localStorage.setItem('topicSearches', JSON.stringify(searches));
+  return newSearch;
+};
+
+// Get articles by topic search ID
+const getArticlesByTopicSearchId = (searchId) => {
+  if (typeof window === 'undefined') return [];
+  
+  initializeStorage();
+  const articles = JSON.parse(localStorage.getItem('articles'));
+  return articles.filter(article => article.topicSearchId === searchId);
+};
+
+// Save topic summary
+const saveTopicSummary = (summary) => {
+  if (typeof window === 'undefined') return null;
+  
+  const summaries = getTopicSummaries();
+  const newSummary = {
+    id: Date.now().toString(),
+    ...summary,
+    createdAt: new Date().toISOString()
+  };
+  
+  summaries.push(newSummary);
+  localStorage.setItem('topicSummaries', JSON.stringify(summaries));
+  return newSummary;
+};
+
+// Get all topic summaries
+const getTopicSummaries = () => {
+  if (typeof window === 'undefined') return [];
+  initializeStorage();
+  return JSON.parse(localStorage.getItem('topicSummaries'));
+};
+
+// Get topic summary by search ID
+const getTopicSummaryBySearchId = (searchId) => {
+  if (typeof window === 'undefined') return null;
+  
+  const summaries = getTopicSummaries();
+  return summaries.find(summary => summary.searchId === searchId) || null;
+};
+
 export {
   initializeStorage,
   getJournals,
@@ -228,5 +311,13 @@ export {
   addArticle,
   addArticles,
   getPodcastByDigestId,
-  savePodcast
+  savePodcast,
+  // Topic search exports
+  getTopicSearches,
+  getTopicSearchById,
+  saveTopicSearch,
+  getArticlesByTopicSearchId,
+  saveTopicSummary,
+  getTopicSummaries,
+  getTopicSummaryBySearchId
 }; 

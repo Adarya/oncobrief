@@ -1,0 +1,97 @@
+<speak>Welcome to OncoBrief, <break time="200ms"/> your weekly podcast summarizing the latest oncology research. This episode covers Apr 24, 2025 - May 1, 2025. <break time="300ms"/> We'll discuss 15 recent publications from top oncology journals.<break time="700ms"/>
+
+Here's a quick overview of the articles we'll cover:<break time="300ms"/>
+
+Article 1: A battery-free nanofluidic intracellular delivery patch for internal organs.. Published in Nature.
+Article 2: Cell cycle duration determines oncogenic transformation capacity.. Published in Nature.
+Article 3: Therapy for Diffuse Astrocytic and Oligodendroglial Tumors in Adults: ASCO-SNO Guideline Rapid Recommendation Update.. Published in Journal of clinical oncology : official journal of the American Society of Clinical Oncology.
+Article 4: Hematopoietic Stem Cell Transplantation Outcomes for High-Risk AML: A Report From the Children&apos;s Oncology Group.. Published in Journal of clinical oncology : official journal of the American Society of Clinical Oncology.
+Article 5: Second-Line Endocrine Therapy With or Without Palbociclib Rechallenge in Patients With Hormone Receptor-Positive/Human Epidermal Growth Factor Receptor 2-Negative Advanced Breast Cancer: PALMIRA Trial.. Published in Journal of clinical oncology : official journal of the American Society of Clinical Oncology.
+Article 6: Zongertinib in Previously Treated HER2-Mutant Non-Small-Cell Lung Cancer.. Published in The New England journal of medicine.
+Article 7: Nonoperative Management of Mismatch Repair-Deficient Tumors.. Published in The New England journal of medicine.
+Article 8: Tumor-Infiltrating Clonal Hematopoiesis.. Published in The New England journal of medicine.
+Article 9: Management of Patients With EGFR Exon 20-Mutant Advanced Non-Small Cell Lung Cancer.. Published in Journal of clinical oncology : official journal of the American Society of Clinical Oncology.
+Article 10: Breast, Colorectal, and Pancreatic Cancer Mortality With Pathogenic Variants in ATM, CHEK2, or PALB2.. Published in Journal of clinical oncology : official journal of the American Society of Clinical Oncology.
+Article 11: Safety and Efficacy of Neoadjuvant Durvalumab Plus Gemcitabine/Cisplatin or Carboplatin in Patients With Operable High-Risk Upper Tract Urothelial Carcinoma: The iNDUCT-GETUG V08 Trial.. Published in Journal of clinical oncology : official journal of the American Society of Clinical Oncology.
+Article 12: Combined Analyses of Circulating Tumor DNA and Immunoscore in Patients With Stage III Colon Cancer: A Post Hoc Analysis of the PRODIGE-GERCOR IDEA-France/HORG-IDEA-Greece Trials.. Published in Journal of clinical oncology : official journal of the American Society of Clinical Oncology.
+Article 13: First-Line Mobocertinib Versus Platinum-Based Chemotherapy in Patients With EGFR Exon 20 Insertion-Positive Metastatic Non-Small Cell Lung Cancer in the Phase III EXCLAIM-2 Trial.. Published in Journal of clinical oncology : official journal of the American Society of Clinical Oncology.
+Article 14: Fulvestrant Versus Anastrozole in Endocrine Therapy-Na&amp;#xef;ve Women With Hormone Receptor-Positive Advanced Breast Cancer: Final Overall Survival in the Phase III FALCON Trial.. Published in Journal of clinical oncology : official journal of the American Society of Clinical Oncology.
+Article 15: Three-Year Overall Survival With Nivolumab Plus Relatlimab in Advanced Melanoma From RELATIVITY-047.. Published in Journal of clinical oncology : official journal of the American Society of Clinical Oncology.
+<break time="1000ms"/>Now, let's explore each article in more detail.<break time="700ms"/>
+
+<emphasis level="strong">Article 1:</emphasis> A battery-free nanofluidic intracellular delivery patch for internal organs..
+From Yin and colleagues.
+Published in Nature in 2025.<break time="300ms"/>
+This paper introduces NanoFLUID, a battery-free, soft nanofluidic patch designed for targeted intracellular delivery of payloads to internal organs. Utilizing electroperforation, the patch achieves approximately 10^5 times faster intracellular transport than diffusion with low voltage pulses. *In vivo* evaluations in models of breast tumors and liver injury validated the patch&apos;s efficiency, safety, and controllability for organ-targeted delivery. The platform also facilitated *in vivo* gene library screening, identifying DUS2 as a lung-specific metastasis driver. NanoFLUID represents a promising bioelectronic platform for targeted organ therapy and biological discovery.
+
+<break time="700ms"/><emphasis level="strong">Article 2:</emphasis> Cell cycle duration determines oncogenic transformation capacity..
+From Chen and colleagues.
+Published in Nature in 2025.<break time="300ms"/>
+This study investigates why cells with oncogenic mutations don&apos;t always develop into cancer, identifying total cell cycle duration  as a key predictor of transformation susceptibility. Across multiple murine tumor models  with various mutations, cancer-prone lineages consistently exhibited significantly shorter Tc compared to resistant lineages. While cancer-prone cells displayed multiple conventional cancer hallmarks, perturbing the SKP2-p27-CDK2/CDK1 axis could block cancer without affecting these hallmarks, highlighting the unique role of Tc. The findings suggest that relative cell cycle duration is a critical determinant distinguishing cancer-prone from cancer-resistant lineages at initiation, independent of other cancer hallmarks.
+
+<break time="700ms"/><emphasis level="strong">Article 3:</emphasis> Therapy for Diffuse Astrocytic and Oligodendroglial Tumors in Adults: ASCO-SNO Guideline Rapid Recommendation Update..
+From Blakeley and colleagues.
+Published in Journal of clinical oncology : official journal of the American Society of Clinical Oncology in 2025.<break time="300ms"/>
+This abstract describes an ASCO Rapid Recommendation Update for the therapy of diffuse astrocytic and oligodendroglial tumors in adults. These updates revise existing ASCO guideline recommendations based on new, practice-changing data identified through an evidence review. Following established ASCO methodology, the goal is to timely disseminate updated recommendations to inform health practitioners and the public on current cancer care options. Guidelines are intended to supplement, not substitute, independent professional clinical judgment.
+
+<break time="700ms"/><emphasis level="strong">Article 4:</emphasis> Hematopoietic Stem Cell Transplantation Outcomes for High-Risk AML: A Report From the Children&apos;s Oncology Group..
+From Huang and colleagues.
+Published in Journal of clinical oncology : official journal of the American Society of Clinical Oncology in 2025.<break time="300ms"/>
+This study combined data from two previous Children&apos;s Oncology Group phase III clinical trials  to evaluate hematopoietic stem cell transplantation  outcomes for pediatric high-risk AML in first complete remission . Patients were reclassified based on contemporary risk factors including measurable residual disease and cryptic cytogenetic/molecular alterations. Comparing outcomes between HSCT and chemotherapy alone in CR1, the analysis found that HSCT was associated with significantly decreased relapse and improved disease-free survival in both the high-risk CM group and the standard-risk CM with positive MRD group. This benefit was confirmed in multivariable analysis and across most subgroups. The findings support the use of HSCT as consolidation for pediatric patients with contemporarily defined high-risk AML.
+
+<break time="700ms"/><emphasis level="strong">Article 5:</emphasis> Second-Line Endocrine Therapy With or Without Palbociclib Rechallenge in Patients With Hormone Receptor-Positive/Human Epidermal Growth Factor Receptor 2-Negative Advanced Breast Cancer: PALMIRA Trial..
+From Llombart-Cussac and colleagues.
+Published in Journal of clinical oncology : official journal of the American Society of Clinical Oncology in 2025.<break time="300ms"/>
+The PALMIRA trial, a randomized phase II study, evaluated palbociclib rechallenge plus alternative endocrine therapy  versus ET alone as second-line treatment for 198 patients with HR+/HER2- advanced breast cancer progressing on first-line palbociclib-based ET. The study found no statistically significant improvement in investigator-assessed progression-free survival with palbociclib rechallenge  compared to ET alone  . Palbociclib rechallenge resulted in a higher incidence of grade ≥3 adverse events. These findings indicate that palbociclib rechallenge with an alternative ET is not an effective second-line strategy in this patient population.
+
+<break time="700ms"/><emphasis level="strong">Article 6:</emphasis> Zongertinib in Previously Treated HER2-Mutant Non-Small-Cell Lung Cancer..
+From Heymach and colleagues.
+Published in The New England journal of medicine in 2025.<break time="300ms"/>
+Zongertinib, an oral, irreversible, HER2-selective TKI, was evaluated in a phase 1a-1b trial for previously treated HER2-mutant NSCLC patients across different mutation types and prior treatments. In the primary cohort , zongertinib achieved a 71% confirmed objective response rate, with median duration of response of 14.1 months and median progression-free survival of 12.4 months. Efficacy was also seen in patients previously treated with HER2-directed ADCs  and those with non-tyrosine kinase domain mutations . The safety profile was favorable, with mainly low-grade adverse events and Grade 3+ events occurring in 3-25% across cohorts, notably without drug-related interstitial lung disease. These findings demonstrate that zongertinib provides significant clinical benefit with manageable toxicity in previously treated HER2-mutant NSCLC.
+
+<break time="700ms"/><emphasis level="strong">Article 7:</emphasis> Nonoperative Management of Mismatch Repair-Deficient Tumors..
+From Cercek and colleagues.
+Published in The New England journal of medicine in 2025.<break time="300ms"/>
+This phase 2 study evaluated neoadjuvant dostarlimab in patients with early-stage mismatch repair-deficient  solid tumors amenable to curative surgery, including rectal and non-rectal sites. Treatment resulted in a clinical complete response  in a high proportion of patients across both cohorts . The majority of patients achieving cCR elected nonoperative management, with 82 of 103 patients completing treatment avoiding surgery. Two-year recurrence-free survival was 92%, and adverse events were predominantly low-grade and reversible. These findings suggest neoadjuvant PD-1 blockade can achieve organ preservation in a high proportion of patients with early-stage dMMR solid tumors.
+
+<break time="700ms"/><emphasis level="strong">Article 8:</emphasis> Tumor-Infiltrating Clonal Hematopoiesis..
+From Pich and colleagues.
+Published in The New England journal of medicine in 2025.<break time="300ms"/>
+This study characterized tumor-infiltrating clonal hematopoiesis , where CHIP mutations are detected in tumors, in large cohorts of patients with NSCLC and other solid tumors. TI-CH was found to be common among patients with CHIP and independently predicted an increased risk of disease recurrence or death in NSCLC and increased mortality in solid tumors. Mechanistically, TET2 mutations were strong predictors of TI-CH and enhanced monocyte migration, fueled a myeloid-rich microenvironment, and promoted tumor growth in models. These findings indicate that TI-CH is a significant prognostic factor and contributes to tumor evolution by remodeling the immune microenvironment. The study supports a role for aging-related hematologic clonal proliferation in cancer progression.
+
+<break time="700ms"/><emphasis level="strong">Article 9:</emphasis> Management of Patients With EGFR Exon 20-Mutant Advanced Non-Small Cell Lung Cancer..
+From Sun and colleagues.
+Published in Journal of clinical oncology : official journal of the American Society of Clinical Oncology in 2025.<break time="300ms"/>
+This abstract describes the Oncology Grand Rounds series format, which aims to integrate original research into clinical practice. The series utilizes case presentations, literature reviews, and expert-suggested management approaches to address diagnostic and management challenges. Its goal is to help clinicians apply key research findings, such as those relevant to managing patients with EGFR Exon 20-mutant advanced NSCLC, to their daily practice.
+
+<break time="700ms"/><emphasis level="strong">Article 10:</emphasis> Breast, Colorectal, and Pancreatic Cancer Mortality With Pathogenic Variants in ATM, CHEK2, or PALB2..
+From Veenstra and colleagues.
+Published in Journal of clinical oncology : official journal of the American Society of Clinical Oncology in 2025.<break time="300ms"/>
+This study investigated cancer mortality associated with pathogenic variants  in
+
+<break time="700ms"/><emphasis level="strong">Article 11:</emphasis> Safety and Efficacy of Neoadjuvant Durvalumab Plus Gemcitabine/Cisplatin or Carboplatin in Patients With Operable High-Risk Upper Tract Urothelial Carcinoma: The iNDUCT-GETUG V08 Trial..
+From Hou&amp;#xe9 and colleagues.
+Published in Journal of clinical oncology : official journal of the American Society of Clinical Oncology in 2025.<break time="300ms"/>
+This phase II trial evaluated neoadjuvant durvalumab combined with gemcitabine/cisplatin or carboplatin in patients with operable high-risk upper tract urothelial carcinoma before radical nephroureterectomy. The study did not meet its primary endpoint of pathologic complete response  rate in either cohort . However, significant downstaging to pTa/pT1 was observed in approximately half of patients in both cohorts. The combination therapy demonstrated a good safety profile with manageable chemotherapy-related toxicities and did not increase surgical risk. Despite not achieving high ypT0 rates, the results suggest potential for downstaging with this combination, particularly with cisplatin.
+
+<break time="700ms"/><emphasis level="strong">Article 12:</emphasis> Combined Analyses of Circulating Tumor DNA and Immunoscore in Patients With Stage III Colon Cancer: A Post Hoc Analysis of the PRODIGE-GERCOR IDEA-France/HORG-IDEA-Greece Trials..
+From Taieb and colleagues.
+Published in Journal of clinical oncology : official journal of the American Society of Clinical Oncology in 2025.<break time="300ms"/>
+This post hoc analysis of two phase III trials evaluated the prognostic value of circulating tumor DNA  and Immunoscore  in patients with resected stage III colon cancer. Post-surgery ctDNA was detected in 19.7% of patients and was a highly significant, independent prognostic factor for time to recurrence and overall survival, superior to IS and other clinical factors. IS was not prognostic in ctDNA-positive patients but provided significant prognostic information in the majority  who were ctDNA-negative. The findings confirm ctDNA as a major independent prognostic biomarker in stage III CC and suggest IS offers additional prognostic value in ctDNA-negative patients.
+
+<break time="700ms"/><emphasis level="strong">Article 13:</emphasis> First-Line Mobocertinib Versus Platinum-Based Chemotherapy in Patients With EGFR Exon 20 Insertion-Positive Metastatic Non-Small Cell Lung Cancer in the Phase III EXCLAIM-2 Trial..
+From J&amp;#xe4 and colleagues.
+Published in Journal of clinical oncology : official journal of the American Society of Clinical Oncology in 2025.<break time="300ms"/>
+The Phase III EXCLAIM-2 trial compared first-line mobocertinib versus platinum-based chemotherapy in patients with EGFR exon 20 insertion-positive advanced/metastatic NSCLC. This randomized study&apos;s primary endpoint was progression-free survival  by blinded independent central review. At the interim analysis, median PFS was identical in both arms , and mobocertinib did not demonstrate superiority, crossing the prespecified futility boundary. While objective response rates were similar and mobocertinib showed some quality-of-life benefits, its efficacy was not superior to chemotherapy for this indication.
+
+<break time="700ms"/><emphasis level="strong">Article 14:</emphasis> Fulvestrant Versus Anastrozole in Endocrine Therapy-Na&amp;#xef;ve Women With Hormone Receptor-Positive Advanced Breast Cancer: Final Overall Survival in the Phase III FALCON Trial..
+From Robertson and colleagues.
+Published in Journal of clinical oncology : official journal of the American Society of Clinical Oncology in 2025.<break time="300ms"/>
+The phase III FALCON trial compared fulvestrant and anastrozole in postmenopausal women with endocrine therapy-naïve, HR+/HER2- advanced breast cancer. The final overall survival  analysis showed no significant difference between the two treatments in the overall population . However, a trend towards improved OS with fulvestrant was observed in patients with nonvisceral disease . These findings, particularly in the nonvisceral subset, are consistent with long-term benefits seen with endocrine therapies in this patient group.
+
+<break time="700ms"/><emphasis level="strong">Article 15:</emphasis> Three-Year Overall Survival With Nivolumab Plus Relatlimab in Advanced Melanoma From RELATIVITY-047..
+From Tawbi and colleagues.
+Published in Journal of clinical oncology : official journal of the American Society of Clinical Oncology in 2025.<break time="300ms"/>
+The RELATIVITY-047 trial evaluated nivolumab plus relatlimab versus nivolumab monotherapy in patients with advanced melanoma. At a median follow-up of 33.8 months, the combination demonstrated a sustained, statistically significant improvement in progression-free survival and a statistically significant improvement in overall survival compared to nivolumab alone. The combination also yielded a numerically higher objective response rate. The safety profile was consistent with previous reports, supporting the sustained clinical benefit of nivolumab plus relatlimab for this patient population.
+
+<break time="700ms"/><break time="500ms"/>That concludes this episode of OncoBrief. <break time="300ms"/> Thank you for listening. <break time="300ms"/> For more detailed information on these articles, please visit the OncoBrief website or check the original publications. <break time="300ms"/> Stay tuned for next week's update on the latest oncology research.</speak>
