@@ -137,14 +137,15 @@ export default function Home() {
             <p className="text-xl mb-8">Weekly summaries of the latest breakthrough research papers, delivered straight to your inbox.</p>
             
             <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <button
-                onClick={() => setShowFullDigest(true)}
+              <Link href="/dashboard" 
                 className="px-6 py-3 bg-white text-indigo-600 font-medium rounded-md hover:bg-gray-100 transition-colors shadow-md"
               >
-                View Latest Digest
-              </button>
-              <Link href="/admin" className="px-6 py-3 bg-transparent border-2 border-white text-white font-medium rounded-md hover:bg-white/10 transition-colors">
-                Generate New Digest
+                Go to Dashboard
+              </Link>
+              <Link href="/topic-explorer" 
+                className="px-6 py-3 bg-transparent border-2 border-white text-white font-medium rounded-md hover:bg-white/10 transition-colors"
+              >
+                Explore Research Topics
               </Link>
             </div>
           </div>
@@ -171,14 +172,12 @@ export default function Home() {
                     </p>
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-gray-500">{article.pubYear}</span>
-                      <button
-                        onClick={() => {
-                          setShowFullDigest(true);
-                        }}
+                      <Link 
+                        href="/dashboard"
                         className="text-indigo-600 hover:text-indigo-800 text-sm font-medium"
                       >
                         Read More
-                      </button>
+                      </Link>
                     </div>
                   </div>
                 </div>
@@ -191,12 +190,12 @@ export default function Home() {
           )}
           
           <div className="text-center mt-10">
-            <button
-              onClick={() => setShowFullDigest(true)}
+            <Link
+              href="/dashboard"
               className="px-6 py-3 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700 transition-colors shadow-md"
             >
               View All Articles
-            </button>
+            </Link>
           </div>
         </div>
       </section>
@@ -209,7 +208,7 @@ export default function Home() {
             <p className="text-gray-600">Stay on top of the latest research with our advanced features</p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="text-center">
               <div className="w-16 h-16 mx-auto bg-indigo-100 rounded-full flex items-center justify-center mb-4">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -238,6 +237,80 @@ export default function Home() {
               </div>
               <h3 className="text-xl font-semibold mb-2">Audio Podcasts</h3>
               <p className="text-gray-600">Listen to the research summaries as a podcast, perfect for busy professionals on the go.</p>
+            </div>
+            
+            <div className="text-center">
+              <div className="w-16 h-16 mx-auto bg-indigo-100 rounded-full flex items-center justify-center mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Topic Explorer</h3>
+              <p className="text-gray-600">Search and explore specific oncology topics with our advanced visualization tools.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      {/* Topic Explorer Feature Highlight */}
+      <section className="py-16 bg-gradient-to-b from-indigo-50 to-white">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col md:flex-row items-center gap-12">
+            <div className="md:w-1/2">
+              <h2 className="text-3xl font-bold text-gray-800 mb-4">Introducing Topic Explorer</h2>
+              <p className="text-gray-600 mb-6">
+                Our new Topic Explorer feature allows you to dive deep into specific oncology research areas. Search across multiple journals, visualize publication timelines, and get AI-generated summaries of the latest findings.
+              </p>
+              <ul className="space-y-3 mb-6">
+                <li className="flex items-start">
+                  <svg className="h-5 w-5 text-green-500 mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                  </svg>
+                  <span>Interactive timeline visualization of publications</span>
+                </li>
+                <li className="flex items-start">
+                  <svg className="h-5 w-5 text-green-500 mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                  </svg>
+                  <span>AI-generated meta-analysis of research trends</span>
+                </li>
+                <li className="flex items-start">
+                  <svg className="h-5 w-5 text-green-500 mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                  </svg>
+                  <span>Filter by journals, date ranges, and keywords</span>
+                </li>
+              </ul>
+              <Link 
+                href="/topic-explorer"
+                className="px-6 py-3 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700 transition-colors shadow-md inline-flex items-center"
+              >
+                Try Topic Explorer
+                <svg className="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                </svg>
+              </Link>
+            </div>
+            <div className="md:w-1/2">
+              <div className="bg-white rounded-lg shadow-xl overflow-hidden">
+                <div className="p-2 bg-indigo-600">
+                  <div className="flex space-x-1">
+                    <div className="h-3 w-3 bg-red-500 rounded-full"></div>
+                    <div className="h-3 w-3 bg-yellow-500 rounded-full"></div>
+                    <div className="h-3 w-3 bg-green-500 rounded-full"></div>
+                  </div>
+                </div>
+                <div className="p-4">
+                  <div className="h-64 bg-gray-100 rounded flex items-center justify-center">
+                    <p className="text-gray-500 text-center">Topic Explorer Timeline Visualization</p>
+                  </div>
+                  <div className="mt-4 space-y-2">
+                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                    <div className="h-4 bg-gray-200 rounded"></div>
+                    <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

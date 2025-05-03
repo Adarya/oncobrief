@@ -33,9 +33,9 @@ export default function Header() {
           
           <nav className="flex space-x-2">
             <Link
-              href="/"
+              href="/dashboard"
               className={`px-4 py-2 rounded-md text-sm font-medium ${
-                isActive('/') 
+                isActive('/dashboard') 
                   ? 'bg-indigo-100 text-indigo-700 shadow-sm' 
                   : 'text-gray-600 hover:bg-gray-100 hover:text-indigo-600'
               }`}

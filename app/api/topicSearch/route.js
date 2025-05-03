@@ -360,9 +360,52 @@ async function generateMetaAnalysisSummary(articles, topic, additionalKeywords, 
     };
   }
   
-  // Extract and combine all abstracts
-  const combinedAbstracts = articlesWithContent.map(a => {
-    return `TITLE: ${a.title}\nJOURNAL: ${a.journal}\nABSTRACT: ${a.abstract}\n---`;
+  // Only process current and past articles - filter out future dates
+  const currentDate = new Date();
+  const validArticles = articlesWithContent.filter(article => {
+    if (!article.pubDate) return true; // Include if no date (conservative approach)
+    const articleDate = new Date(article.pubDate);
+    return articleDate <= currentDate;
+  });
+  
+  console.log(`Filtering for valid dates: ${validArticles.length} of ${articlesWithContent.length} articles have valid publication dates`);
+  
+  if (validArticles.length < 3) {
+    console.log(`Not enough articles with valid dates to analyze: ${validArticles.length}`);
+    return { 
+      fullText: `Insufficient content for analysis: found ${validArticles.length} articles with valid publication dates.`,
+      sections: {
+        overview: `This collection includes ${articles.length} research papers about ${topic}, but many have future publication dates, limiting analysis.`,
+        keyFindings: "Unable to generate key findings summary due to insufficient content with valid publication dates.",
+        researchTrends: "Unable to analyze research trends due to articles with future publication dates.",
+        clinicalImplications: "Unable to determine clinical implications due to insufficient validated content.",
+        futureDirections: "Unable to suggest future directions due to data limitations."
+      }
+    };
+  }
+  
+  // Use a smaller subset of articles if we have too many (to avoid token limits)
+  const maxArticlesToAnalyze = 15;
+  const selectedArticles = validArticles.length > maxArticlesToAnalyze 
+    ? validArticles.slice(0, maxArticlesToAnalyze)
+    : validArticles;
+  
+  // Sort by publication date (newest first) and then extract reduced abstracts
+  selectedArticles.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+  
+  // Extract and combine all abstracts with more structure
+  const combinedAbstracts = selectedArticles.map((a, index) => {
+    // Use a max of 500 chars per abstract to avoid hitting token limits
+    const truncatedAbstract = a.abstract.length > 500 
+      ? a.abstract.substring(0, 500) + '...' 
+      : a.abstract;
+      
+    return `ARTICLE ${index + 1}:
+TITLE: ${a.title}
+JOURNAL: ${a.journal}
+DATE: ${a.pubDate || 'Unknown'}
+ABSTRACT: ${truncatedAbstract}
+------`;
   }).join('\n\n');
   
   // Format time range for the prompt
@@ -384,45 +427,65 @@ async function generateMetaAnalysisSummary(articles, topic, additionalKeywords, 
     try {
       console.log(`Attempt ${retryCount + 1}/${MAX_RETRIES} to generate meta-analysis summary for topic: "${topic}"`);
       
+      // Simpler, more focused prompt - using direct instructions rather than role-play
+      const geminiPrompt = `Analyze the following research abstracts about "${topic}"${keywordsText} and create a research summary with these five specific sections:
+
+1. OVERVIEW: A brief introduction to the research landscape for ${topic}
+2. KEY FINDINGS: The most significant discoveries organized by theme
+3. RESEARCH TRENDS: Methodological approaches and emerging directions
+4. CLINICAL IMPLICATIONS: Relevant findings for medical practice
+5. FUTURE DIRECTIONS: Where the field appears to be heading
+
+For each section, provide 3-5 sentences of concise, factual analysis based only on the provided abstracts.
+
+Format your response with section headers clearly marked.
+
+Here are the abstracts to analyze:
+
+${combinedAbstracts}`;
+
       // Direct API call to Gemini API
-      const geminiEndpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-04-17:generateContent";
+      const geminiEndpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
       
       const requestData = {
         contents: [
           {
             parts: [
               {
-                text: `You are a medical research analyst specializing in oncology. Analyze the following collection of research abstracts about "${topic}"${keywordsText} published during ${timeRangeText}.
-
-Task: Create a comprehensive yet concise meta-analysis summary that:
-1. Identifies major discoveries and advances related to ${topic}
-2. Highlights consistent findings across multiple papers
-3. Notes any contradictory results or open questions
-4. Summarizes the most promising research directions
-5. Identifies key methodological approaches being used
-6. Suggests implications for clinical practice when relevant
-
-Format your response in these sections:
-1. OVERVIEW: A brief introduction to the research landscape for ${topic} during this period
-2. KEY FINDINGS: The most significant discoveries, organized by theme
-3. RESEARCH TRENDS: Methodological approaches and emerging directions
-4. CLINICAL IMPLICATIONS: Relevant findings for medical practice (if applicable)
-5. FUTURE DIRECTIONS: Where the field appears to be heading
-
-Here are the research abstracts:
-
-${combinedAbstracts}
-
-Important: Provide a scholarly, objective analysis suitable for medical professionals. If you cannot generate a comprehensive summary due to limited information, please state so clearly in each section.`
+                text: geminiPrompt
               }
             ]
           }
         ],
         generationConfig: {
-          temperature: 0.2,
-          maxOutputTokens: 2000
-        }
+          temperature: 0.1,
+          topP: 0.8,
+          topK: 40,
+          maxOutputTokens: 1024,
+          stopSequences: []
+        },
+        safetySettings: [
+          {
+            category: "HARM_CATEGORY_HARASSMENT",
+            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+          },
+          {
+            category: "HARM_CATEGORY_HATE_SPEECH",
+            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+          },
+          {
+            category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+          },
+          {
+            category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+          }
+        ]
       };
+      
+      // Log prompt length for debugging
+      console.log(`Gemini prompt length: ${geminiPrompt.length} chars`);
       
       console.log("Making API call to Gemini for meta-analysis summary");
       const response = await axios.post(
@@ -432,7 +495,7 @@ Important: Provide a scholarly, objective analysis suitable for medical professi
           headers: {
             'Content-Type': 'application/json'
           },
-          timeout: 60000 // 60 second timeout for longer processing
+          timeout: 90000 // 90 second timeout for longer processing
         }
       );
       
@@ -461,7 +524,19 @@ Important: Provide a scholarly, objective analysis suitable for medical professi
           futureDirections: extractSection(summaryText, 'FUTURE DIRECTIONS')
         };
         
-        console.log(`Generated meta-analysis summary with ${summaryText.length} chars`);
+        // Verify we have at least some content in sections
+        const validSections = Object.values(sections).filter(text => 
+          text && text.length > 20 && 
+          !text.includes("No") && 
+          !text.includes("Unable")
+        );
+        
+        if (validSections.length < 3) {
+          console.log(`Not enough valid sections in response (${validSections.length}/5)`);
+          throw new Error("Insufficient section content generated");
+        }
+        
+        console.log(`Generated meta-analysis summary with ${summaryText.length} chars and ${validSections.length}/5 valid sections`);
         return {
           fullText: summaryText,
           sections
@@ -485,7 +560,7 @@ Important: Provide a scholarly, objective analysis suitable for medical professi
   }
   
   // All retries failed, return a basic summary
-  console.error('All attempts to generate meta-analysis summary failed:', lastError.response?.data || lastError.message || lastError);
+  console.error('All attempts to generate meta-analysis summary failed:', lastError);
   return { 
     fullText: `Failed to generate a comprehensive meta-analysis for ${topic}. Please try again later.`,
     sections: {
