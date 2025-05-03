@@ -14,6 +14,9 @@ OncoBrief is a web application that provides weekly summaries of new oncology re
 - **Manual Trigger**: Manually trigger the generation of a new digest.
 - **Email Delivery**: Send digests directly to your inbox.
 - **Podcast Generation**: Create AI-narrated audio summaries of research articles.
+- **Topic Explorer**: Search and analyze articles by topic across PubMed with journal filtering.
+- **Research Summaries**: AI-generated research summaries with key findings, trends, and implications.
+- **Research Podcasts**: Convert research summaries into audio format for listening on the go.
 
 ## Technical Implementation
 
@@ -122,6 +125,8 @@ To send emails through Gmail, you need to:
 - **Improved API Reliability**: Added retry mechanisms with exponential backoff
 - **Processing Capacity**: Increased from 15 to 50 papers per digest
 - **UI Enhancements**: Improved layout and responsiveness
+- **Topic Explorer**: New feature to search articles by topic with research summary generation
+- **Research Podcasts**: Added functionality to convert research summaries into audio format
 
 ## Data Storage
 
